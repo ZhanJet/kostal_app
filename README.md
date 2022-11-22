@@ -1,29 +1,31 @@
-# README #
+Flexiv App Guis
+===============
 
-This README would normally document whatever steps are necessary to get your application up and running.
+This is a repository contains different UI applications and rdk programs that use flexiv_middleware2 as their communication infrastructure. 
 
-### What is this repository for? ###
+Configure and build the apps
+-------------------------------
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+1. Install qt5 with:
 
-### How do I get set up? ###
+        sudo apt-get install qt5-default
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+    (Optional) If you need to use QT creator, you can install qt5 creator with:
 
-### Contribution guidelines ###
+        sudo apt-get install qtcreator
 
-* Writing tests
-* Code review
-* Other guidelines
+2. Clone and build ``flexiv_thirdparty2`` using its ``build_flexiv_sw_ubuntu_dependencies.sh`` script.
+3. Configure the top-level CMake using ``cmake-gui``:
 
-### Who do I talk to? ###
+        mkdir build && cd build
+        cmake-gui .. &
 
-* Repo owner or admin
-* Other community or team contact
+4. Click Configure, then choose the default Unix Makefile configuration. An error will pop out, which is expected.
+5. Configure ``flexiv_thirdparty2_path`` to the one cloned and built in step 2. For example, ``~/Documents/flexiv_thirdparty2``.
+6. Choose the apps to build by checking options starting with ``BUILD_APP_``.
+7. Click Configure then click Generate.
+8. If no error occurs, close ``cmake-gui`` Window, then go back to the Terminal and:
+
+        make -j4
+
+9. All checked apps will be compiled and the executable binaries are under ``build/app/`` directory.
