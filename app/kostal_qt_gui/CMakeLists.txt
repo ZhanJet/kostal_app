@@ -38,11 +38,12 @@ set(ALL_GUI_SOURCE ${QT_SOURCE} ${GENERATED_IDL_GUI_SOURCE} ${GENERATED_IDL_PLAN
 qt5_add_resources(ALL_GUI_SOURCE ${flexiv_app_guis_resources_path}/qt_flexiv_theme/resources.qrc)
 add_executable(${PROJECT_NAME} ${ALL_GUI_SOURCE})
 target_include_directories(${PROJECT_NAME}
-    PUBLIC
+    PRIVATE
     ${GENERATED_IDL_GUI_INCLUDE_DIRECTORIES}
     ${GENERATED_IDL_PLAN_INCLUDE_DIRECTORIES}
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
-target_link_libraries(${PROJECT_NAME} PRIVATE
+target_link_libraries(${PROJECT_NAME}
+    PRIVATE
     flexiv::flexiv_app_guis
 )

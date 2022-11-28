@@ -68,7 +68,6 @@ FvrUseFlexivThirdParty2()
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 find_package(spdlog REQUIRED)
-find_package(tinyxml2 REQUIRED)
 
 # flexiv dependencies
 if(NOT TARGET flexiv::flexiv_middleware2)

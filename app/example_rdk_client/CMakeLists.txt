@@ -35,7 +35,7 @@ add_executable(${PROJECT_NAME} ${MAIN_SOURCE} ${GENERATED_IDL_GUI_SOURCE} ${GENE
 
 # add path to idl header files and flexiv rdk header files
 target_include_directories(${PROJECT_NAME}
-    PUBLIC
+    PRIVATE
     ${GENERATED_IDL_GUI_INCLUDE_DIRECTORIES}
     ${GENERATED_IDL_PLAN_INCLUDE_DIRECTORIES}
     ${CMAKE_CURRENT_SOURCE_DIR}/../../thirdparty/flexiv_rdk/include
@@ -43,7 +43,8 @@ target_include_directories(${PROJECT_NAME}
 )
 
 # find and link dependencies
-target_link_libraries(${PROJECT_NAME} PRIVATE
+target_link_libraries(${PROJECT_NAME} 
+    PRIVATE
     flexiv::flexiv_app_guis
     ${CMAKE_CURRENT_SOURCE_DIR}/../../thirdparty/flexiv_rdk/lib/libFlexivRdk.x86_64-linux-gnu.a
 )
