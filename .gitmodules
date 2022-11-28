@@ -6,4 +6,4 @@
 	url = https://bitbucket.org/FlexivTeam/flexiv_cmake_tools.git
 [submodule "thirdparty/flexiv_middleware2"]
 	path = thirdparty/flexiv_middleware2
-	url = https://lcc_flexiv@bitbucket.org/FlexivTeam/flexiv_middleware2.git
+	url = https://bitbucket.org/FlexivTeam/flexiv_middleware2.git

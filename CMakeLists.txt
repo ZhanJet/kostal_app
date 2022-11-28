@@ -25,6 +25,15 @@ endif()
 set(BUILD_SHARED_LIBS OFF)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
+# exclude Anaconda directories from search
+if(DEFINED ENV{CONDA_PREFIX})
+  set(h5_ignore_path
+    $ENV{CONDA_PREFIX}/bin $ENV{CONDA_PREFIX}/lib $ENV{CONDA_PREFIX}/include
+    $ENV{CONDA_PREFIX}/Library/bin $ENV{CONDA_PREFIX}/Library/lib $ENV{CONDA_PREFIX}/Library/include
+  )
+  list(APPEND CMAKE_IGNORE_PATH ${h5_ignore_path})
+endif()
+
 # ===================================================================
 # PROJECT CONFIG
 # ===================================================================
