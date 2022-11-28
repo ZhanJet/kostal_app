@@ -19,16 +19,25 @@ flexiv_middleware2_fastrtpsgen(${CMAKE_CURRENT_SOURCE_DIR}/../../idl
     GENERATED_IDL_GUI_SOURCE
     GENERATED_IDL_GUI_INCLUDE_DIRECTORIES)
 
+flexiv_middleware2_fastrtpsgen(${CMAKE_CURRENT_SOURCE_DIR}/../../idl
+    plan_msgs/msg
+    ${CMAKE_CURRENT_BINARY_DIR}/generated
+    GENERATED_IDL_PLAN_HEADER
+    GENERATED_IDL_PLAN_SOURCE
+    GENERATED_IDL_PLAN_INCLUDE_DIRECTORIES)
+
 # ===================================================================
 # PROJECT EXECUTABLES
 # ===================================================================
 # add executables
-add_executable(${PROJECT_NAME} src/main.cpp ${GENERATED_IDL_GUI_SOURCE})
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src MAIN_SOURCE)
+add_executable(${PROJECT_NAME} ${MAIN_SOURCE} ${GENERATED_IDL_GUI_SOURCE} ${GENERATED_IDL_PLAN_SOURCE})
 
 # add path to idl header files and flexiv rdk header files
 target_include_directories(${PROJECT_NAME}
     PUBLIC
     ${GENERATED_IDL_GUI_INCLUDE_DIRECTORIES}
+    ${GENERATED_IDL_PLAN_INCLUDE_DIRECTORIES}
     ${CMAKE_CURRENT_SOURCE_DIR}/../../thirdparty/flexiv_rdk/include
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )

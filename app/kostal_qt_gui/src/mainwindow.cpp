@@ -1,16 +1,23 @@
 // QT associated headers
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
-#include "statuslight.h"
 #include <QtDebug>
 #include <QStatusBar>
 #include <QLabel>
 
-// const variables for window title and topic name
+// wrapped headers
+#include "statuslight.h"
+
+// const variables for window title
 const std::string qtWindowTitle = "Kostal Flexiv System v1.0";
-const std::string topicKostal = "topic_kostal";
+
+// const variables for topic name
+const std::string topicKostal = "topic_kostal_states";
+const std::string topicPlan = "topic_plan_name";
+
 // create subscribed message
 kostal_gui_msgs::msg::KostalLever sub_msg;
+plan_msgs::msg::PlanExecution pub_msg;
 
 /**
  * @brief callback function for message subscription. This callback function
@@ -46,23 +53,33 @@ MainWindow::MainWindow(QWidget* parent)
 
     // setup window title
     setWindowTitle(QString::fromStdString(qtWindowTitle));
-    // add staus bar to hint status
+
+    // add hint function of the floating cursor
     QStatusBar* statusbar = new QStatusBar();
     setStatusBar(statusbar);
     QLabel* statuslabel = new QLabel("Hint", this);
     statusbar->addWidget(statuslabel);
+
     // connect signal & slot functions
     connect(
         this, &MainWindow::signal_start, this, &MainWindow::slot_start_func);
     connect(this, &MainWindow::signal_stop, this, &MainWindow::slot_stop_func);
     connect(this, &MainWindow::signal_exit, this, &MainWindow::slot_exit_func);
     connect(this, &MainWindow::signal_run, this, &MainWindow::slot_run_func);
+
     // setup light to render status
     setStatusLight(ui->label_system_status, 1, 16);
-    // create subscription to start subscription in the constructor
-    subscriber = subNode.CreateDefaultSubscription<
+
+    // create subscription to start subscribing rdk states
+    subscriber = sub_node.CreateDefaultSubscription<
         kostal_gui_msgs::msg::KostalLeverPubSubType>(
         topicKostal, &subCallback, (void*)&sub_msg);
+
+    // create publiser to publish plan name to rdk process
+    publisher
+        = pub_node
+              .CreateDefaultPublisher<plan_msgs::msg::PlanExecutionPubSubType>(
+                  topicPlan);
 }
 
 // deconstructor
@@ -97,29 +114,50 @@ void MainWindow::on_pushButton_run_clicked()
 // start slot function
 void MainWindow::slot_start_func()
 {
-    // Empty for now
     qDebug() << "The start slot is triggered \n";
+    planName = "";
+    stopExec = false;
+    startExec = true;
+    pub_msg.plan_name(planName.toStdString());
+    pub_msg.stop_execution(stopExec);
+    pub_msg.start_execution(startExec);
+    publisher->Publish((void*)&pub_msg);
 }
 
-// stop slot function
+// stop slot function: just stop node
 void MainWindow::slot_stop_func()
 {
-    qDebug() << "The stop slot is triggered \n";
-    subNode.StopAll();
+    planName = "";
+    stopExec = true;
+    startExec = false;
+    pub_msg.plan_name(planName.toStdString());
+    pub_msg.stop_execution(stopExec);
+    pub_msg.start_execution(startExec);
+    publisher->Publish((void*)&pub_msg);
 }
 
-// exit slot function
+// exit slot function: stop node and exit
 void MainWindow::slot_exit_func()
 {
-    qDebug() << "The exit slot is triggered \n";
-    subNode.StopAll();
+    planName = "";
+    stopExec = true;
+    startExec = false;
+    pub_msg.plan_name(planName.toStdString());
+    pub_msg.stop_execution(stopExec);
+    pub_msg.start_execution(startExec);
+    publisher->Publish((void*)&pub_msg);
+    sub_node.StopAll();
     QMainWindow::close();
 }
 
-// run slot function
+// run slot function: type in plan name and run
 void MainWindow::slot_run_func()
 {
-    qDebug() << "The run slot is triggered \n";
     planName = ui->lineEdit_plan_name->text();
-    qDebug() << planName;
+    stopExec = false;
+    startExec = true;
+    pub_msg.plan_name(planName.toStdString());
+    pub_msg.stop_execution(stopExec);
+    pub_msg.start_execution(startExec);
+    publisher->Publish((void*)&pub_msg);
 }

@@ -338,7 +338,7 @@ QPushButton:disabled {
        <item>
         <widget class="QPushButton" name="pushButton_start">
          <property name="statusTip">
-          <string>start the robot</string>
+          <string>Start the server</string>
          </property>
          <property name="text">
           <string>Start</string>
@@ -348,7 +348,7 @@ QPushButton:disabled {
        <item>
         <widget class="QPushButton" name="pushButton_stop">
          <property name="statusTip">
-          <string>stop the robot</string>
+          <string>Stop the subscription</string>
          </property>
          <property name="text">
           <string>Stop</string>
@@ -357,6 +357,9 @@ QPushButton:disabled {
        </item>
        <item>
         <widget class="QPushButton" name="pushButton_exit">
+         <property name="statusTip">
+          <string>Exit the subscription</string>
+         </property>
          <property name="text">
           <string>Exit</string>
          </property>
@@ -375,6 +378,9 @@ QPushButton:disabled {
        </item>
        <item row="0" column="1">
         <widget class="QLabel" name="label_system_status">
+         <property name="statusTip">
+          <string>Flexiv system status</string>
+         </property>
          <property name="text">
           <string>TextLabel</string>
          </property>
@@ -469,12 +475,16 @@ QPushButton:disabled {
      <item row="1" column="0">
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="QLineEdit" name="lineEdit_plan_name"/>
+        <widget class="QLineEdit" name="lineEdit_plan_name">
+         <property name="statusTip">
+          <string>Input the plan name</string>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QPushButton" name="pushButton_run">
          <property name="statusTip">
-          <string>start the robot</string>
+          <string>Execute the plan by name</string>
          </property>
          <property name="text">
           <string>Run</string>

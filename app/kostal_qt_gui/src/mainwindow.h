@@ -1,12 +1,20 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+// QT headers
 #include <QMainWindow>
 #include <QLineEdit>
+
 // Pub-Sub associated headers
 #include <flexiv/middleware2/fast_rtps_node.h>
+
+// message headers for KostalLever.idl
 #include "KostalLever.h"
 #include "KostalLeverPubSubTypes.h"
+
+// message headers for PlanExecution.idl
+#include "PlanExecution.h"
+#include "PlanExecutionPubSubTypes.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -43,11 +51,25 @@ private slots:
 
 private:
     Ui::MainWindow* ui;
-    flexiv::middleware2::FastRTPSNode subNode
-        = flexiv::middleware2::FastRTPSNode("my_subscriber");
+
+    flexiv::middleware2::FastRTPSNode sub_node
+        = flexiv::middleware2::FastRTPSNode("qt_subscriber");
+
+    flexiv::middleware2::FastRTPSNode pub_node
+        = flexiv::middleware2::FastRTPSNode("qt_publisher");
+
     std::shared_ptr<flexiv::middleware2::FastRTPSSubscriber<
         kostal_gui_msgs::msg::KostalLeverPubSubType>>
         subscriber;
-    QString planName;
+
+    std::shared_ptr<flexiv::middleware2::FastRTPSPublisher<
+        plan_msgs::msg::PlanExecutionPubSubType>>
+        publisher;
+
+    QString planName = "";
+
+    bool startExec = false;
+
+    bool stopExec = false;
 };
 #endif // MAINWINDOW_H

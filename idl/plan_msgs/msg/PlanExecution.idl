@@ -1,0 +1,21 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from test_msgs/msg/PlanExecution.msg
+// generated code does not contain a copyright notice
+
+module plan_msgs
+{
+    module msg
+    {
+        struct PlanExecution
+        {
+            // the plan name to be executed
+            string plan_name;
+
+            // whether it should start execution mode
+            boolean start_execution;
+
+            // whether it should stop execution mode
+            boolean stop_execution;
+        };
+    };
+};
