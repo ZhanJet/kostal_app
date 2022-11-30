@@ -67,7 +67,6 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/FvrUseFlexivThirdParty2.cmake)
 FvrUseFlexivThirdParty2()
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
-find_package(spdlog REQUIRED)
 
 # flexiv dependencies
 if(NOT TARGET flexiv::flexiv_middleware2)
@@ -92,7 +91,6 @@ target_include_directories(${PROJECT_NAME} INTERFACE
 target_link_libraries(${PROJECT_NAME} INTERFACE
     flexiv::flexiv_middleware2
     Qt5::Widgets
-    spdlog::spdlog
 )
 
 # ===================================================================
