@@ -3,8 +3,8 @@
  * @copyright Copyright (C) 2016-2022 Flexiv Ltd. All Rights Reserved.
  */
 
-#ifndef _PUBLISH_OPERATIONS_HPP_
-#define _PUBLISH_OPERATIONS_HPP_
+#ifndef _PARTICIPANT_HPP_
+#define _PARTICIPANT_HPP_
 
 // middleware2 fast-rtps headers
 #include <flexiv/middleware2/fast_rtps_node.h>
@@ -91,4 +91,4 @@ public:
 };
 
 } /* namespace flexiv */
-#endif // _PUBLISH_OPERATIONS_HPP_
+#endif // _PARTICIPANT_HPP_

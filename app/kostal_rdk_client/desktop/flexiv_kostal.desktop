@@ -1,0 +1,17 @@
+[Desktop Entry]
+
+Name=Flexiv-Kostal
+
+Comment=Flexiv-Kostal
+
+Exec=echo "kostal" | sudo -S bash /home/kostal/Desktop/flexiv_app_guis/app/kostal_rdk_client/desktop/kostal.sh
+
+Path=/home/kostal/Desktop/flexiv_app_guis/app/kostal_rdk_client/desktop/
+
+Icon=/home/kostal/Desktop/flexiv_app_guis/app/kostal_rdk_client/desktop/flexiv_kostal.ico
+
+Terminal=true
+
+StartupNotify=false
+
+Type=Application

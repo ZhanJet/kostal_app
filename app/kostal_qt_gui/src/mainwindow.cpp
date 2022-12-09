@@ -23,22 +23,38 @@ plan_msgs::msg::PlanExecution pub_msg;
  * @brief callback function for message subscription. This callback function
  * will print tcp pose and flange pose from subscribed messages
  */
-void subCallback()
+void MainWindow::subCallback(kostal_gui_msgs::msg::KostalLever* sub_msg)
 {
+    // QT print subscribed tcp pose
     std::cout << "Tcp pose sub: ";
-    auto tcpPose_array = sub_msg.tcp_pose();
+    auto tcpPose_array = sub_msg->tcp_pose();
     for (auto it = tcpPose_array.begin(); it != tcpPose_array.end(); it++) {
         std::cout << *it << " ";
     }
     std::cout << std::endl;
 
+    // QT print subscribed flange pose
     std::cout << "Flange pose sub: ";
-    auto flangePose_array = sub_msg.flange_pose();
+    auto flangePose_array = sub_msg->flange_pose();
     for (auto it = flangePose_array.begin(); it != flangePose_array.end();
          it++) {
         std::cout << *it << " ";
     }
     std::cout << std::endl;
+
+    // QT set subscribed status light
+    int status = (int)(sub_msg->status()) - 48;
+    setStatusLight(ui->label_system_status, status, 16);
+
+    // QT show subscribed taskname & tasktype
+    ui->label_task_name->setText(QString::fromStdString(sub_msg->task_name()));
+    ui->label_task_type->setText(QString::fromStdString(sub_msg->task_type()));
+
+    // QT show subscribed config data
+    ui->label_spi_cpha->setText(QString::fromStdString(sub_msg->cpha()));
+    ui->label_spi_cpol->setText(QString::fromStdString(sub_msg->cpol()));
+    ui->label_spi_lsb->setText(QString::fromStdString(sub_msg->lsb()));
+    ui->label_spi_selp->setText(QString::fromStdString(sub_msg->selp()));
 }
 
 // constructor
@@ -48,7 +64,7 @@ MainWindow::MainWindow(QWidget* parent)
 {
     // set up ui first
     ui->setupUi(this);
-    ui->lineEdit_plan_name->setPlaceholderText("Please type in plan ...");
+    ui->lineEdit_plan_name->setPlaceholderText("Please type in plan name ...");
     ui->lineEdit_plan_name->setClearButtonEnabled(true);
 
     // setup window title
@@ -68,14 +84,15 @@ MainWindow::MainWindow(QWidget* parent)
     connect(this, &MainWindow::signal_run, this, &MainWindow::slot_run_func);
 
     // setup light to render status
-    setStatusLight(ui->label_system_status, 1, 16);
+    setStatusLight(ui->label_system_status, 0, 16);
+    auto SubCallback = std::bind(&MainWindow::subCallback, this, &sub_msg);
 
     // create subscription to start subscribing rdk states
     subscriber = sub_node.CreateDefaultSubscription<
         kostal_gui_msgs::msg::KostalLeverPubSubType>(
-        topicKostal, &subCallback, (void*)&sub_msg);
+        topicKostal, SubCallback, (void*)&sub_msg);
 
-    // create publiser to publish plan name to rdk process
+    // create publisher to publish plan name to rdk process
     publisher
         = pub_node
               .CreateDefaultPublisher<plan_msgs::msg::PlanExecutionPubSubType>(

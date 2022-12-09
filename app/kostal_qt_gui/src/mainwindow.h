@@ -29,6 +29,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget* parent = nullptr);
     ~MainWindow();
+    void subCallback(kostal_gui_msgs::msg::KostalLever* sub_msg);
 
 signals:
     void signal_start();

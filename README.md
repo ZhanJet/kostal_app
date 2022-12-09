@@ -13,7 +13,13 @@ Setup build environment
     sudo apt install build-essential pkg-config git wget autoconf libtool
 ````
 
-2. Install qt5 with:
+2. Install some necessary dependencies:
+
+````
+    sudo apt install -y libboost-dev libjsoncpp-dev libspdlog-dev libusb-0.1-4
+````
+
+3. Install qt5 with:
 
 ````
     sudo apt-get install qt5-default
@@ -25,13 +31,13 @@ Setup build environment
     sudo apt-get install qtcreator
 ````
 
-3. Clone [flexiv_thirdparty2](https://bitbucket.org/FlexivTeam/flexiv_thirdparty2.git) with:
+4. Clone [flexiv_thirdparty2](https://bitbucket.org/FlexivTeam/flexiv_thirdparty2.git) with:
 
 ````
     git clone https://bitbucket.org/FlexivTeam/flexiv_thirdparty2.git
 ````
 
-4. Go to the cloned flexiv_thirdparty2 folder and then build necessary libraries individually:
+5. Go to the cloned flexiv_thirdparty2 folder and then build necessary libraries individually:
 
 ````
     cd flexiv_thirdparty2

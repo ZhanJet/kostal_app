@@ -13,8 +13,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # ===================================================================
 # PROJECT OPTIONS FOR APP
 # ===================================================================
-option(BUILD_APP_KOSTAL_QT_GUI "Build kostal GUI app" ON)
-option(BUILD_APP_EXAMPLE_RDK_CLIENT "Build example rdk client app" ON)
+option(BUILD_APP_KOSTAL_QT_GUI "Build kostal GUI app" OFF)
+option(BUILD_APP_EXAMPLE_RDK_CLIENT "Build example rdk client app" OFF)
+option(BUILD_APP_KOSTAL_RDK_CLIENT "Build kostal rdk client app" OFF)
 
 # set default build type
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
@@ -103,4 +104,8 @@ endif()
 
 if(${BUILD_APP_EXAMPLE_RDK_CLIENT})
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/app/example_rdk_client)
+endif()
+
+if(${BUILD_APP_KOSTAL_RDK_CLIENT})
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/app/kostal_rdk_client)
 endif()
