@@ -1,33 +1,104 @@
-// QT associated headers
-#include "mainwindow.h"
-#include "./ui_mainwindow.h"
 #include <QtDebug>
 #include <QStatusBar>
+#include <QMenuBar>
 #include <QLabel>
+#include <QTimer>
+#include <QDateTime>
+#include <QFile>
+#include <QDir>
+#include "mainwindow.h"
+#include "./ui_mainwindow.h"
 
-// wrapped headers
-#include "statuslight.h"
 
-// const variables for window title
-const std::string qtWindowTitle = "Kostal Flexiv System v1.0";
+/** Window title*/
+const std::string k_qtWindowTitle = "Kostal Flexiv System v1.0";
 
-// const variables for topic name
-const std::string topicKostal = "topic_kostal_states";
-const std::string topicPlan = "topic_plan_name";
+/** Topic Name Kostal*/
+const std::string k_topicKostal = "topic_kostal_states";
 
-// create subscribed message
-kostal_gui_msgs::msg::KostalLever sub_msg;
-plan_msgs::msg::PlanExecution pub_msg;
+/** Topic Name plan*/
+const std::string k_topicPlan = "topic_plan_name";
 
-/**
- * @brief callback function for message subscription. This callback function
- * will print tcp pose and flange pose from subscribed messages
- */
-void MainWindow::subCallback(kostal_gui_msgs::msg::KostalLever* sub_msg)
+/** Subscribe Node name*/
+const std::string k_subNodeName = "qt_subscriber_new";
+
+/** Publish Node name*/
+const std::string k_pubNodeName = "qt_publisher_new";
+
+/** ASCII Offset*/
+const int k_asciiOffset = 48;
+
+/** Robot Status label color*/
+const QString k_robotStatusColor = "background-color: %1;"
+    "color:%2;"
+    "font-size: 20px;"
+    "border: 1px solid #909090;"
+    "border-radius: 5px;";
+
+MainWindow::MainWindow(QWidget* parent)
+: QMainWindow(parent)
+, ui(new Ui::MainWindow)
+, m_subNode(k_subNodeName)
+, m_pubNode(k_pubNodeName)
+, m_logNum(1)
+{
+    // set up ui first
+    ui->setupUi(this);
+
+    // init gui
+    initGUI();
+
+    // connect Slots
+    connectSlots();
+
+    // create callback function for subscription
+    auto SubCallback = std::bind(&MainWindow::subCallback, this, &m_subMsg);
+
+    // create subscription to start subscribing rdk states
+    m_subscriber = m_subNode.CreateDefaultSubscription<
+        kostal_gui_msgs::msg::KostalLeverPubSubType>(
+        k_topicKostal, SubCallback, (void*)&m_subMsg);
+
+    // create publisher to publish msg to rdk process
+    m_publisher
+        = m_pubNode
+              .CreateDefaultPublisher<plan_msgs::msg::PlanExecutionPubSubType>(
+                  k_topicPlan);
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
+void MainWindow::initGUI()
+{
+    setWindowIcon(QIcon(":/images/images/logo_color_horizontal.png"));
+    setWindowTitle(QString::fromStdString(k_qtWindowTitle));
+
+    ui->logTextEdit->setStyleSheet(
+        "");
+    ui->logTextEdit->document()->setMaximumBlockCount(100);
+
+//    // testjxy: test log
+//    QTimer* timer;
+//    timer = new QTimer();
+//    timer->start(1000);
+
+//    connect(timer, &QTimer::timeout, this,
+//        &MainWindow::slotTestLog);
+}
+
+void MainWindow::connectSlots()
+{
+    connect(ui->robotResetAction, SIGNAL(triggered()), this, SLOT(slotResetRobot()));
+}
+
+void MainWindow::subCallback(kostal_gui_msgs::msg::KostalLever* subscribedMsg)
 {
     // QT print subscribed tcp pose
     std::cout << "Tcp pose sub: ";
-    auto tcpPose_array = sub_msg->tcp_pose();
+    auto tcpPose_array = subscribedMsg->tcp_pose();
     for (auto it = tcpPose_array.begin(); it != tcpPose_array.end(); it++) {
         std::cout << *it << " ";
     }
@@ -35,146 +106,179 @@ void MainWindow::subCallback(kostal_gui_msgs::msg::KostalLever* sub_msg)
 
     // QT print subscribed flange pose
     std::cout << "Flange pose sub: ";
-    auto flangePose_array = sub_msg->flange_pose();
+    auto flangePose_array = subscribedMsg->flange_pose();
     for (auto it = flangePose_array.begin(); it != flangePose_array.end();
          it++) {
         std::cout << *it << " ";
     }
     std::cout << std::endl;
 
-    // QT set subscribed status light
-    int status = (int)(sub_msg->status()) - 48;
-    setStatusLight(ui->label_system_status, status, 16);
-
-    // QT show subscribed taskname & tasktype
-    ui->label_task_name->setText(QString::fromStdString(sub_msg->task_name()));
-    ui->label_task_type->setText(QString::fromStdString(sub_msg->task_type()));
-
-    // QT show subscribed config data
-    ui->label_spi_cpha->setText(QString::fromStdString(sub_msg->cpha()));
-    ui->label_spi_cpol->setText(QString::fromStdString(sub_msg->cpol()));
-    ui->label_spi_lsb->setText(QString::fromStdString(sub_msg->lsb()));
-    ui->label_spi_selp->setText(QString::fromStdString(sub_msg->selp()));
+    // update kostal data
+    updateKostalLeverData(subscribedMsg);
 }
 
-// constructor
-MainWindow::MainWindow(QWidget* parent)
-: QMainWindow(parent)
-, ui(new Ui::MainWindow)
+void MainWindow::updateKostalLeverData(const kostal_gui_msgs::msg::KostalLever* subscribedMsg)
 {
-    // set up ui first
-    ui->setupUi(this);
-    ui->lineEdit_plan_name->setPlaceholderText("Please type in plan name ...");
-    ui->lineEdit_plan_name->setClearButtonEnabled(true);
+    // update SPI
+    updateSPIData(subscribedMsg);
 
-    // setup window title
-    setWindowTitle(QString::fromStdString(qtWindowTitle));
+    // update Robot
+    updateRobotData(subscribedMsg);
 
-    // add hint function of the floating cursor
-    QStatusBar* statusbar = new QStatusBar();
-    setStatusBar(statusbar);
-    QLabel* statuslabel = new QLabel("Hint", this);
-    statusbar->addWidget(statuslabel);
+    // update Testman
+    updateTestmanData(subscribedMsg);
 
-    // connect signal & slot functions
-    connect(
-        this, &MainWindow::signal_start, this, &MainWindow::slot_start_func);
-    connect(this, &MainWindow::signal_stop, this, &MainWindow::slot_stop_func);
-    connect(this, &MainWindow::signal_exit, this, &MainWindow::slot_exit_func);
-    connect(this, &MainWindow::signal_run, this, &MainWindow::slot_run_func);
-
-    // setup light to render status
-    setStatusLight(ui->label_system_status, 0, 16);
-    auto SubCallback = std::bind(&MainWindow::subCallback, this, &sub_msg);
-
-    // create subscription to start subscribing rdk states
-    subscriber = sub_node.CreateDefaultSubscription<
-        kostal_gui_msgs::msg::KostalLeverPubSubType>(
-        topicKostal, SubCallback, (void*)&sub_msg);
-
-    // create publisher to publish plan name to rdk process
-    publisher
-        = pub_node
-              .CreateDefaultPublisher<plan_msgs::msg::PlanExecutionPubSubType>(
-                  topicPlan);
+    // record log
+    updateLogData(subscribedMsg);
 }
 
-// deconstructor
-MainWindow::~MainWindow()
+void MainWindow::updateRobotData(const kostal_gui_msgs::msg::KostalLever *subscribedMsg)
 {
-    delete ui;
+    // node name
+    ui->robotNodeNameLabel->setText(QString::fromStdString(subscribedMsg->node_name()));
+    // work status
+    int status = (int)(subscribedMsg->status()) - k_asciiOffset;
+    if(status == RobotStatus::RS_INIT) {
+        ui->robotStatusLabel->setText("INIT");  // init = yellow
+        ui->robotStatusLabel->setStyleSheet(k_robotStatusColor.arg("#FFFF00").arg("#285780"));
+    } else if(status == RobotStatus::RS_IDLE) {
+        ui->robotStatusLabel->setText("IDLE");  // idle = blue
+        ui->robotStatusLabel->setStyleSheet(k_robotStatusColor.arg("#0091FF").arg("#FFFFFF"));
+        // when robot is IDLE, testman is STOP
+        ui->testmanStatusLabel->setText("STOP");
+    } else if (status == RobotStatus::RS_BUSY) {
+        ui->robotStatusLabel->setText("BUSY");  // busy = green
+        ui->robotStatusLabel->setStyleSheet(k_robotStatusColor.arg("#00FF00").arg("#285780"));
+        // when robot is BUSY, testman is START
+        ui->testmanStatusLabel->setText("START");
+    } else if (status == RobotStatus::RS_FAULT) {
+        ui->robotStatusLabel->setText("FAULT"); // fault = red
+        ui->robotStatusLabel->setStyleSheet(k_robotStatusColor.arg("#FF0000").arg("#285780"));
+    } else if (status == RobotStatus::RS_DONE)  {
+        ui->robotStatusLabel->setText("DONE");  // done = white
+        ui->robotStatusLabel->setStyleSheet(k_robotStatusColor.arg("#FFFFFF").arg("#285780"));
+    } else {                                    // other = grey
+        ui->robotStatusLabel->setText("");
+        ui->robotStatusLabel->setStyleSheet(k_robotStatusColor.arg("#6D6D6D").arg("#285780"));
+    }
+
+    // tcp pose
+    auto tcpPoseArray = subscribedMsg->tcp_pose();
+    ui->robotTCPXLabel->setText(QString::number(tcpPoseArray.at(0),'f',3));
+    ui->robotTCPYLabel->setText(QString::number(tcpPoseArray.at(1),'f',3));
+    ui->robotTCPZLabel->setText(QString::number(tcpPoseArray.at(2),'f',3));
+    ui->robotTCPRXLabel->setText(QString::number(tcpPoseArray.at(3),'f',3));
+    ui->robotTCPRYLabel->setText(QString::number(tcpPoseArray.at(4),'f',3));
+    ui->robotTCPRZLabel->setText(QString::number(tcpPoseArray.at(5),'f',3));
+
+    // flange pose
+    auto flangePoseArray = subscribedMsg->flange_pose();
+    ui->robotFlangeXLabel->setText(QString::number(flangePoseArray.at(0),'f',3));
+    ui->robotFlangeYLabel->setText(QString::number(flangePoseArray.at(1),'f',3));
+    ui->robotFlangeZLabel->setText(QString::number(flangePoseArray.at(2),'f',3));
+    ui->robotFlangeRXLabel->setText(QString::number(flangePoseArray.at(3),'f',3));
+    ui->robotFlangeRYLabel->setText(QString::number(flangePoseArray.at(4),'f',3));
+    ui->robotFlangeRZLabel->setText(QString::number(flangePoseArray.at(5),'f',3));
+
+    // sensor force
+    auto sensorArray = subscribedMsg->raw_data();
+    ui->robotSensorForceXLabel->setText(QString::number(sensorArray.at(0)));
+    ui->robotSensorForceYLabel->setText(QString::number(sensorArray.at(1)));
+    ui->robotSensorForceZLabel->setText(QString::number(sensorArray.at(2)));
+    ui->robotSensorTorqueXLabel->setText(QString::number(sensorArray.at(3)));
+    ui->robotSensorTorqueYLabel->setText(QString::number(sensorArray.at(4)));
+    ui->robotSensorTorqueZLabel->setText(QString::number(sensorArray.at(5)));
 }
 
-// start signal function
-void MainWindow::on_pushButton_start_clicked()
+void MainWindow::updateSPIData(const kostal_gui_msgs::msg::KostalLever *subscribedMsg)
 {
-    emit this->signal_start();
+    // spi configuration info
+    ui->spiCPOLLabel->setText(QString::fromStdString(subscribedMsg->cpol()));
+    ui->spiCPHALabel->setText(QString::fromStdString(subscribedMsg->cpha()));
+    ui->spiLSBLabel->setText(QString::fromStdString(subscribedMsg->lsb()));
+    ui->spiSELPLabel->setText(QString::fromStdString(subscribedMsg->selp()));
+
+    // spi data or spi data recv flag
+    //    ui->spiRecvDataLabel->setText(QString::fromStdString(subscribedMsg->recvFlag()));
 }
 
-// stop signal function
-void MainWindow::on_pushButton_stop_clicked()
+void MainWindow::updateTestmanData(const kostal_gui_msgs::msg::KostalLever *subscribedMsg)
 {
-    emit this->signal_stop();
+    // product type
+    ui->testmanTypeLabel->setText(QString::fromStdString(subscribedMsg->task_name()));
+    qDebug() << "task name = " << QString::fromStdString(subscribedMsg->task_name());
+    // test status (start or stop)
+    // ---> this status is set according to the robot work status
+
+    // task type
+    ui->testmanTaskTypeLabel->setText(QString::fromStdString(subscribedMsg->task_type()));
+
+    // whether return to origin
+
+    // whether recv undefined cmd
+
 }
 
-// exit signal function
-void MainWindow::on_pushButton_exit_clicked()
+void MainWindow::updateLogData(const kostal_gui_msgs::msg::KostalLever *subscribedMsg)
 {
-    emit this->signal_exit();
+    QString logData = QString::fromStdString(subscribedMsg->task_name());
+    LogType type = (LogType)(subscribedMsg->status());
+    updateLog(logData,type);
 }
 
-void MainWindow::on_pushButton_run_clicked()
+void MainWindow::updateLog(const QString &logData, const LogType& type)
 {
-    emit this->signal_run();
+    QString color;
+    QString strLog;
+    if(type == LT_INFO) {
+        color = ("#0091FF");
+    }
+    else if(type == LT_ERROR) {
+        color = ("#E50000");
+    }
+    else if(type == LT_WARNING) {
+        color = ("#F3A400");
+    }
+
+    strLog = QString("<font color = %1 size = \"4\"> %2 </font>").arg(color).arg(logData);
+    ui->logTextEdit->append(strLog);
+    ++m_logNum;
 }
 
-// start slot function
-void MainWindow::slot_start_func()
+void MainWindow::slotTestLog()
+{
+    QString log = QString("This is a Flexiv test log : %1").arg(m_logNum);
+    LogType type = (LogType)(m_logNum%LT_NUM);
+    updateLog(log,type);
+}
+
+void MainWindow::slotResetRobot()
 {
     qDebug() << "The start slot is triggered \n";
-    planName = "";
-    stopExec = false;
-    startExec = true;
-    pub_msg.plan_name(planName.toStdString());
-    pub_msg.stop_execution(stopExec);
-    pub_msg.start_execution(startExec);
-    publisher->Publish((void*)&pub_msg);
+    m_pubMsg.plan_name( "plan1");
+    m_pubMsg.stop_execution(false);
+    m_pubMsg.start_execution(true);
+    m_publisher->Publish((void*)&m_pubMsg);
 }
 
-// stop slot function: just stop node
-void MainWindow::slot_stop_func()
+void MainWindow::on_saveLogButton_clicked()
 {
-    planName = "";
-    stopExec = true;
-    startExec = false;
-    pub_msg.plan_name(planName.toStdString());
-    pub_msg.stop_execution(stopExec);
-    pub_msg.start_execution(startExec);
-    publisher->Publish((void*)&pub_msg);
-}
+    QDateTime time = QDateTime::currentDateTime();
+    QString logFileName  = "log"+time.toString("yyyyMMddhhmmss")+".txt";
+    QString logPath = QCoreApplication::applicationDirPath() + "/LOG/";
+    QString logFilePath = logPath+logFileName;
 
-// exit slot function: stop node and exit
-void MainWindow::slot_exit_func()
-{
-    planName = "";
-    stopExec = true;
-    startExec = false;
-    pub_msg.plan_name(planName.toStdString());
-    pub_msg.stop_execution(stopExec);
-    pub_msg.start_execution(startExec);
-    publisher->Publish((void*)&pub_msg);
-    sub_node.StopAll();
-    QMainWindow::close();
-}
+    QDir dir(logPath);
+    if (!dir.exists()) {
+        dir.mkdir(logPath);
+    }
 
-// run slot function: type in plan name and run
-void MainWindow::slot_run_func()
-{
-    planName = ui->lineEdit_plan_name->text();
-    stopExec = false;
-    startExec = true;
-    pub_msg.plan_name(planName.toStdString());
-    pub_msg.stop_execution(stopExec);
-    pub_msg.start_execution(startExec);
-    publisher->Publish((void*)&pub_msg);
+    QFile *file = new QFile;
+    file->setFileName(logFilePath);
+
+    if( file->open(QIODevice::WriteOnly | QIODevice::Text) ){
+        QTextStream out(file);
+        out << ui->logTextEdit->toPlainText() << endl;
+        file->close();
+    }
 }
