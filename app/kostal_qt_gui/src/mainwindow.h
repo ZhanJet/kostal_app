@@ -3,6 +3,8 @@
 
 // QT headers
 #include <QMainWindow>
+#include <QTextCursor>
+#include <QFile>
 
 // Pub-Sub associated headers
 #include <flexiv/middleware2/fast_rtps_node.h>
@@ -113,6 +115,13 @@ private:
      */
     void updateLog(const QString& logData, const LogType& type);
 
+    /**
+     * @brief Save log in file
+     * @param[in] list Data list that need update
+     * @param[in] type Type of log
+     */
+    void saveLog(const QString& logData, const LogType& type);
+
 signals:
 
 private slots:
@@ -121,21 +130,10 @@ private slots:
      */
     void slotResetRobot();
 
-    void slotTestLog();
-
     /**
-     * @brief Click save Log button
+     * @brief Slot test log function
      */
-    void on_saveLogButton_clicked();
-//    /**
-//     * @brief Slot Reset SPI
-//     */
-//    void slotResetSPI();
-
-//    /**
-//     * @brief Slot Reset Testman
-//     */
-//    void slotResetTestman();
+    void slotTestLog();
 
 private:
     /** Ui*/
@@ -171,5 +169,17 @@ private:
 
     /** Num of log*/
     int m_logNum;
+
+    /** Current Text Cursor*/
+    QTextCursor m_currentTxtCur;
+
+    /** Log file*/
+    QFile* g_logFile;
+
+    /** Log file path*/
+    QString m_logpath;
+
+    /** Log file path*/
+    QString g_pathName;
 };
 #endif // MAINWINDOW_H

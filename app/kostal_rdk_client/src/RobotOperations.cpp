@@ -118,7 +118,7 @@ Status RobotOperations::collectSyncData(flexiv::Robot* robotPtr,
                 robotPtr->getRobotStates(robotStates);
                 robotDataPtr->tcpPose = robotStates.tcpPose;
                 robotDataPtr->rawDataForceSensor
-                    = robotStates.extForceInTcpFrame;
+                    = robotStates.extWrenchInTcp;
                 robotDataPtr->flangePose = robotStates.flangePose;
 
                 // put data instance to list

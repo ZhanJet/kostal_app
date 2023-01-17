@@ -4,7 +4,6 @@
 #include <QLabel>
 #include <QTimer>
 #include <QDateTime>
-#include <QFile>
 #include <QDir>
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
@@ -45,6 +44,14 @@ MainWindow::MainWindow(QWidget* parent)
     // set up ui first
     ui->setupUi(this);
 
+    // create log
+    g_logFile = new QFile(this);
+    m_logpath = QCoreApplication::applicationDirPath() + "/LOG/";
+    QDir dir(m_logpath);
+    if (!dir.exists()) {
+        dir.mkdir(m_logpath);
+    }
+
     // init gui
     initGUI();
 
@@ -69,6 +76,11 @@ MainWindow::MainWindow(QWidget* parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+
+    // close log
+    if (g_logFile->isOpen()) {
+        g_logFile->close();
+    }
 }
 
 void MainWindow::initGUI()
@@ -76,17 +88,17 @@ void MainWindow::initGUI()
     setWindowIcon(QIcon(":/images/images/logo_color_horizontal.png"));
     setWindowTitle(QString::fromStdString(k_qtWindowTitle));
 
-    ui->logTextEdit->setStyleSheet(
-        "");
+    ui->saveLogButton->hide();
     ui->logTextEdit->document()->setMaximumBlockCount(100);
+    ui->logTextEdit->moveCursor(QTextCursor::Start, QTextCursor::MoveAnchor);
 
-//    // testjxy: test log
-//    QTimer* timer;
-//    timer = new QTimer();
+    // testjxy: test log
+    QTimer* timer;
+    timer = new QTimer();
 //    timer->start(1000);
 
-//    connect(timer, &QTimer::timeout, this,
-//        &MainWindow::slotTestLog);
+    connect(timer, &QTimer::timeout, this,
+        &MainWindow::slotTestLog);
 }
 
 void MainWindow::connectSlots()
@@ -228,6 +240,9 @@ void MainWindow::updateLogData(const kostal_gui_msgs::msg::KostalLever *subscrib
 
 void MainWindow::updateLog(const QString &logData, const LogType& type)
 {
+    // save current cursor
+    m_currentTxtCur = ui->logTextEdit->textCursor();
+
     QString color;
     QString strLog;
     if(type == LT_INFO) {
@@ -242,7 +257,61 @@ void MainWindow::updateLog(const QString &logData, const LogType& type)
 
     strLog = QString("<font color = %1 size = \"4\"> %2 </font>").arg(color).arg(logData);
     ui->logTextEdit->append(strLog);
+    ui->logTextEdit->setTextCursor(m_currentTxtCur);
     ++m_logNum;
+
+    // save log in file
+    saveLog(logData,type);
+}
+
+void MainWindow::saveLog(const QString &logData, const LogType &type)
+{
+    QDateTime time = QDateTime::currentDateTime();
+    QString logFileName  = "log"+time.toString("yyyyMMdd")+".txt";
+    QString logFilePath = m_logpath+logFileName;
+
+    // check whole path name, avoid unused open file
+    if (g_pathName != logFilePath) {
+        g_pathName = logFilePath;
+
+        // close old
+        if (g_logFile->isOpen()) {
+            g_logFile->close();
+        } else {}
+
+        // open
+        g_logFile->setFileName(g_pathName);
+        g_logFile->open(QIODevice::WriteOnly | QIODevice::Append | QFile::Text);
+    }
+
+    // write log into file
+    QTextStream out(g_logFile);
+    switch(type)
+    {
+        case LT_INFO:
+            out <<"[INFO]"<< logData << endl;
+            break;
+        case LT_ERROR:
+            out <<"[ERROR]"<< logData << endl;
+            break;
+        case LT_WARNING:
+            out <<"[WARNING]"<< logData << endl;
+            break;
+        default:
+            break;
+    }
+
+    // when file size is over 10mb, create new log file for today
+    if (g_logFile->size() >= 10*1024*1024) {
+        QString logfileNameBackup = QObject::tr("log%1%2%3%4%5%6.txt").arg(time.date().year()).arg(time.date().month(),2,10,QChar('0'))
+                                .arg(time.date().day(),2,10,QChar('0')).arg(time.time().hour(),2,10,QChar('0')).arg(time.time().minute(),2,10,QChar('0'))
+                                .arg(time.time().second(),2,10,QChar('0'));
+
+        qDebug() << "Rename = " << g_logFile->rename(m_logpath+logfileNameBackup);
+
+        // rename a new log file
+        g_pathName = logfileNameBackup;
+    }
 }
 
 void MainWindow::slotTestLog()
@@ -259,26 +328,4 @@ void MainWindow::slotResetRobot()
     m_pubMsg.stop_execution(false);
     m_pubMsg.start_execution(true);
     m_publisher->Publish((void*)&m_pubMsg);
-}
-
-void MainWindow::on_saveLogButton_clicked()
-{
-    QDateTime time = QDateTime::currentDateTime();
-    QString logFileName  = "log"+time.toString("yyyyMMddhhmmss")+".txt";
-    QString logPath = QCoreApplication::applicationDirPath() + "/LOG/";
-    QString logFilePath = logPath+logFileName;
-
-    QDir dir(logPath);
-    if (!dir.exists()) {
-        dir.mkdir(logPath);
-    }
-
-    QFile *file = new QFile;
-    file->setFileName(logFilePath);
-
-    if( file->open(QIODevice::WriteOnly | QIODevice::Text) ){
-        QTextStream out(file);
-        out << ui->logTextEdit->toPlainText() << endl;
-        file->close();
-    }
 }
