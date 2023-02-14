@@ -13,12 +13,14 @@ Status Communications::init(flexiv::Robot* robotPtr)
     // start publishing at the init stage
     m_publisher = m_parHandler.createPublisher(&pub_node, topicKostal);
 
-    m_parHandler.publishMsg(m_publisher, &pub_msg, g_greyLight);
+    // m_parHandler.publishMsg(m_publisher, &pub_msg, g_greyLight);
+    m_parHandler.publishMsg(m_publisher, &pub_msg, g_testmanGreyLight);
+    m_parHandler.publishMsg(m_publisher, &pub_msg, g_robotGreyLight);
+    m_parHandler.publishMsg(m_publisher, &pub_msg, g_spiGreyLight);
 
     // sleep 2 seconds and wait for subscriber
-    std::this_thread::sleep_for(std::chrono::seconds(2));
-
-    m_parHandler.publishMsg(m_publisher, &pub_msg, g_greenLight);
+    // std::this_thread::sleep_for(std::chrono::seconds(2));
+    // m_parHandler.publishMsg(m_publisher, &pub_msg, g_greenLight);
 
     Status result;
 
@@ -32,9 +34,11 @@ Status Communications::init(flexiv::Robot* robotPtr)
         k_log.error("===================================================");
         m_flexivStatus = FAULT;
         m_seriousErrorFlag = true;
-        m_parHandler.publishMsg(m_publisher, &pub_msg, g_redLight);
+        // m_parHandler.publishMsg(m_publisher, &pub_msg, g_redLight);
+        m_parHandler.publishMsg(m_publisher, &pub_msg, g_robotRedLight);
     } else {
         f_log.info("The robot connection is built successfully");
+        m_parHandler.publishMsg(m_publisher, &pub_msg, g_robotGreenLight);
     }
 
     // 2nd, try to initialize the socket server and get spi config from
@@ -48,11 +52,13 @@ Status Communications::init(flexiv::Robot* robotPtr)
         // there is no need to continue
         m_flexivStatus = FAULT;
         m_seriousErrorFlag = true;
-        m_parHandler.publishMsg(m_publisher, &pub_msg, g_redLight);
+        // m_parHandler.publishMsg(m_publisher, &pub_msg, g_redLight);
+        m_parHandler.publishMsg(m_publisher, &pub_msg, g_testmanRedLight);
 
         return result;
     } else {
         k_log.info("The socket connection is built successfully");
+        m_parHandler.publishMsg(m_publisher, &pub_msg, g_testmanRedLight);
     }
 
     // 3rd, check spi device connection with the spi config in shake-hand
@@ -62,8 +68,10 @@ Status Communications::init(flexiv::Robot* robotPtr)
     if (result != SUCCESS) {
         m_flexivStatus = FAULT;
         m_seriousErrorFlag = true;
+        m_parHandler.publishMsg(m_publisher, &pub_msg, g_spiRedLight);
     } else {
         k_log.info("The spi connection is built successfully");
+        m_parHandler.publishMsg(m_publisher, &pub_msg, g_spiGreenLight);
     }
 
     // 4th, if flexivStatus has been changed from INIT, but the socket server
@@ -73,7 +81,7 @@ Status Communications::init(flexiv::Robot* robotPtr)
             "The flexiv system failed in initialization, please check "
             "ROBOT or SPI");
         m_flexivStatus = FAULT;
-        m_parHandler.publishMsg(m_publisher, &pub_msg, g_redLight);
+        // m_parHandler.publishMsg(m_publisher, &pub_msg, g_redLight);
 
         return SYSTEM;
     }
@@ -101,7 +109,9 @@ Status Communications::executeCheck()
     if (result != SUCCESS) {
         m_flexivStatus = FAULT;
         f_log.error("The task message is failed to be parsed");
-        m_parHandler.publishMsg(m_publisher, &pub_msg, g_redLight);
+        // m_parHandler.publishMsg(m_publisher, &pub_msg, g_redLight);
+        m_parHandler.publishMsg(m_publisher, &pub_msg, g_testmanRedLight);
+
 
         return result;
     }
@@ -144,7 +154,9 @@ Status Communications::executeTask(flexiv::Robot* robotPtr)
         m_flexivStatus = FAULT;
         f_log.error("The task message is failed to be parsed");
         f_log.error("===================================================");
-        m_parHandler.publishMsg(m_publisher, &pub_msg, g_redLight);
+        // m_parHandler.publishMsg(m_publisher, &pub_msg, g_redLight);
+        m_parHandler.publishMsg(m_publisher, &pub_msg, g_testmanRedLight);
+
 
         return result;
     }
@@ -162,7 +174,7 @@ Status Communications::executeTask(flexiv::Robot* robotPtr)
         m_flexivStatus = FAULT;
         f_log.error("The sync task is failed to be executed");
         f_log.error("===================================================");
-        m_parHandler.publishMsg(m_publisher, &pub_msg, g_redLight);
+        // m_parHandler.publishMsg(m_publisher, &pub_msg, g_redLight);
 
         return result;
     }
@@ -179,7 +191,7 @@ Status Communications::executeTask(flexiv::Robot* robotPtr)
         m_flexivStatus = FAULT;
         f_log.error("The excel file is failed to be generated");
         f_log.error("===================================================");
-        m_parHandler.publishMsg(m_publisher, &pub_msg, g_redLight);
+        // m_parHandler.publishMsg(m_publisher, &pub_msg, g_redLight);
 
         return result;
     }
@@ -198,7 +210,8 @@ Status Communications::executeTask(flexiv::Robot* robotPtr)
         m_flexivStatus = FAULT;
         f_log.error("The SPI re-initialization is failed");
         f_log.error("===================================================");
-        m_parHandler.publishMsg(m_publisher, &pub_msg, g_redLight);
+        // m_parHandler.publishMsg(m_publisher, &pub_msg, g_redLight);
+        m_parHandler.publishMsg(m_publisher, &pub_msg, g_spiRedLight);
 
         return result;
     } else {
@@ -228,8 +241,8 @@ void Communications::stateMachine(flexiv::Robot* robotPtr)
                     m_flexivStatus = FAULT;
                     m_seriousErrorFlag = true;
                     k_log.error("Please recover the robot and then reboot it");
-                    m_parHandler.publishMsg(m_publisher, &pub_msg, g_redLight);
-
+                    // m_parHandler.publishMsg(m_publisher, &pub_msg, g_redLight);
+                    m_parHandler.publishMsg(m_publisher, &pub_msg, g_robotRedLight);
                     return;
                 }
 
@@ -256,8 +269,10 @@ void Communications::stateMachine(flexiv::Robot* robotPtr)
                         k_log.error(
                             "=============================================="
                             "=====");
+                        // m_parHandler.publishMsg(
+                            //m_publisher, &pub_msg, g_redLight);
                         m_parHandler.publishMsg(
-                            m_publisher, &pub_msg, g_redLight);
+                            m_publisher, &pub_msg, g_testmanRedLight);
 
                         return;
                     }
@@ -269,8 +284,10 @@ void Communications::stateMachine(flexiv::Robot* robotPtr)
                         k_log.error(
                             "The flexiv system is having an error in "
                             "querying server status");
+                        // m_parHandler.publishMsg(
+                            // m_publisher, &pub_msg, g_redLight);
                         m_parHandler.publishMsg(
-                            m_publisher, &pub_msg, g_redLight);
+                            m_publisher, &pub_msg, g_testmanRedLight);
 
                         return;
                     }
@@ -321,8 +338,8 @@ void Communications::stateMachine(flexiv::Robot* robotPtr)
                     // set status to fault
                     t_pool.join();
                     m_flexivStatus = FAULT;
-                    m_parHandler.publishMsg(m_publisher, &pub_msg, g_redLight);
-
+                    // m_parHandler.publishMsg(m_publisher, &pub_msg, g_redLight);
+                    m_parHandler.publishMsg(m_publisher, &pub_msg, g_testmanRedLight);
                     return;
                 }
                 break;
@@ -338,8 +355,8 @@ void Communications::stateMachine(flexiv::Robot* robotPtr)
                 m_service.disconnect();
                 k_log.info(
                     "Flexiv system server closed this connection safely");
-                m_parHandler.publishMsg(m_publisher, &pub_msg, g_greyLight);
-
+                // m_parHandler.publishMsg(m_publisher, &pub_msg, g_greyLight);
+                m_parHandler.publishMsg(m_publisher, &pub_msg, g_testmanGreyLight);
                 return;
             }
 
@@ -360,7 +377,8 @@ void Communications::stateMachine(flexiv::Robot* robotPtr)
                         "=================================================="
                         "=");
                     m_flexivStatus = FAULT;
-                    m_parHandler.publishMsg(m_publisher, &pub_msg, g_redLight);
+                    // m_parHandler.publishMsg(m_publisher, &pub_msg, g_redLight);
+                    m_parHandler.publishMsg(m_publisher, &pub_msg, g_testmanRedLight);
 
                     return;
                 }
