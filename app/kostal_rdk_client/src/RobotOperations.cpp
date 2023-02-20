@@ -5,11 +5,12 @@
  */
 
 #include "RobotOperations.hpp"
+#include <chrono>
 
 namespace kostal {
 
 Status RobotOperations::buildRobotConnection(
-    flexiv::Robot* robotPtr, flexiv::Log* logPtr)
+        flexiv::Robot* robotPtr, flexiv::Log* logPtr)
 {
     // Check whether the robot is connected or not
     if (robotPtr->isConnected() != true) {
@@ -29,7 +30,7 @@ Status RobotOperations::buildRobotConnection(
         // Check fault again
         if (robotPtr->isFault()) {
             logPtr->error(
-                "===================================================");
+                        "===================================================");
             logPtr->error("Robot's fault cannot be cleared, exiting ...");
 
             return ROBOT;
@@ -63,7 +64,7 @@ Status RobotOperations::buildRobotConnection(
 }
 
 Status RobotOperations::clearTinyFault(
-    flexiv::Robot* robotPtr, flexiv::Log* logPtr)
+        flexiv::Robot* robotPtr, flexiv::Log* logPtr)
 {
     // Clear fault on robot server if any
     if (robotPtr->isFault()) {
@@ -74,7 +75,7 @@ Status RobotOperations::clearTinyFault(
         // Check again
         if (robotPtr->isFault()) {
             logPtr->error(
-                "===================================================");
+                        "===================================================");
             logPtr->error("Robot's fault cannot be cleared, exiting ...");
             return ROBOT;
         } else {
@@ -86,8 +87,7 @@ Status RobotOperations::clearTinyFault(
 }
 
 Status RobotOperations::collectSyncData(flexiv::Robot* robotPtr,
-    RobotData* robotDataPtr, std::list<RobotData>* robotDataListPtr,
-    SPIData* spiDataPtr, std::list<SPIData>* spiDataListPtr)
+                                        RobotData* robotDataPtr, std::list<RobotData>* robotDataListPtr)
 {
     while (g_collectSwitch) {
         // get plan info
@@ -111,33 +111,30 @@ Status RobotOperations::collectSyncData(flexiv::Robot* robotPtr,
             // get robot states
             flexiv::RobotStates robotStates;
             {
-                // use mutex to lock data inputting step
-                std::lock_guard<std::mutex> lock(g_kostalDataMutex);
-
                 // get robot states and input them to robot data instance
                 robotPtr->getRobotStates(robotStates);
                 robotDataPtr->tcpPose = robotStates.tcpPose;
-                robotDataPtr->rawDataForceSensor
-                    = robotStates.extWrenchInTcp;
+                robotDataPtr->rawDataForceSensor = robotStates.extWrenchInTcp;
                 robotDataPtr->flangePose = robotStates.flangePose;
+                robotDataPtr->timestamp = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
                 // put data instance to list
                 robotDataListPtr->push_back(*robotDataPtr);
-                spiDataListPtr->push_back(*spiDataPtr);
             }
         }
     }
+    std::cout << "robot collect finish!" << std::endl;
 
     return SUCCESS;
 }
 
 bool RobotOperations::checkRobotPlan(
-    flexiv::Robot* robotPtr, flexiv::Log* logPtr, std::string planName)
+        flexiv::Robot* robotPtr, flexiv::Log* logPtr, std::string planName)
 {
     auto planList = robotPtr->getPlanNameList();
 
     if (std::find(planList.begin(), planList.end(), planName)
-        == planList.end()) {
+            == planList.end()) {
         logPtr->error("=================================================");
         logPtr->error("The robot does not have planName: " + planName);
         return false;
@@ -147,7 +144,7 @@ bool RobotOperations::checkRobotPlan(
 }
 
 Status RobotOperations::executeRobotPlan(
-    flexiv::Robot* robotPtr, flexiv::Log* logPtr, std::string planName)
+        flexiv::Robot* robotPtr, flexiv::Log* logPtr, std::string planName)
 {
     // execute plan by name
     robotPtr->executePlanByName(planName);

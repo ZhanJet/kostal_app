@@ -23,6 +23,7 @@ public:
     std::vector<double> tcpPose; // [7]
     std::vector<double> flangePose; // [7]
     std::vector<double> rawDataForceSensor; // [6]
+    int64_t timestamp{0};
 
 public:
     // copy constructor
@@ -32,6 +33,7 @@ public:
         tcpPose = r.tcpPose;
         flangePose = r.flangePose;
         rawDataForceSensor = r.rawDataForceSensor;
+        timestamp = r.timestamp;
     }
 };
 
@@ -45,6 +47,7 @@ public:
     SPIData() = default;
     virtual ~SPIData() = default;
     uint8_t SPISensor[16] = {0};
+    int64_t timestamp{0};
 
 public:
     // copy constructor
@@ -53,17 +56,18 @@ public:
         for (int i = 0; i < 16; i++) {
             SPISensor[i] = s.SPISensor[i];
         }
+        timestamp = s.timestamp;
     }
 
     // overload operator functions
-    SPIData& operator=(uint8_t* buffer)
-    {
-        memcpy(SPISensor, buffer, sizeof(uint8_t) * 16);
-        return *this;
-    }
+//    SPIData& operator=(uint8_t* buffer)
+//    {
+//        memcpy(SPISensor, buffer, sizeof(uint8_t) * 16);
+//        return *this;
+//    }
 
     // clear SPISensor[16]
-    void clearSensor() { SPISensor[16] = {0}; }
+    void clearSensor() { SPISensor[16] = {0}; timestamp = 0;}
 };
 
 /**

@@ -5,6 +5,8 @@
  */
 
 #include "SyncTask.hpp"
+#include <thread>
+#include <functional>
 
 namespace kostal {
 
@@ -26,33 +28,22 @@ Status SyncTask::runScheduler(flexiv::Robot* robotPtr, SPIData* spiDataPtr,
     // execute the plan by planName
     robotPtr->executePlanByName(planName);
 
-    // Create a task pool to let two data collect threads run
-    boost::asio::thread_pool collectTaskPool;
+    auto spiWorker = std::bind(&kostal::SPIOperations::collectSPIData, m_spiHandler, spiDataPtr, spiDataListPtr, logPtr);
+    auto robotWorker = std::bind(&kostal::RobotOperations::collectSyncData, m_robotHandler, robotPtr, robotDataPtr, robotDataListPtr);
 
-    // Insert SPI data collect thread
-    boost::asio::post(
-        collectTaskPool, boost::bind(&kostal::SPIOperations::collectSPIData,
-                             m_spiHandler, spiDataPtr, logPtr));
-
-    // Insert Robot data collect thread
-    boost::asio::post(
-        collectTaskPool, boost::bind(&kostal::RobotOperations::collectSyncData,
-                             m_robotHandler, robotPtr, robotDataPtr,
-                             robotDataListPtr, spiDataPtr, spiDataListPtr));
+    std::thread spiThread(spiWorker);
+    std::thread robotThread(robotWorker);
 
     // Wait until the program is finished
     while (robotPtr->isBusy()) {
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 
-    // Close the two while-loop in threads
-    {
-        std::lock_guard<std::mutex> lock(g_kostalDataMutex);
-        g_collectSwitch = false;
-    }
+    g_collectSwitch = false;
 
     // Wait for threads till the end
-    collectTaskPool.join();
+    spiThread.join();
+    robotThread.join();
     logPtr->info("The sync task is finished by scheduler");
 
     return SUCCESS;

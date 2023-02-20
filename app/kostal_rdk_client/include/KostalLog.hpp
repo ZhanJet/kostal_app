@@ -7,6 +7,10 @@
 #define FLEXIVRDK_KOSTALLOG_HPP_
 
 #include "SystemParams.hpp"
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/basic_file_sink.h>
+
+extern std::shared_ptr<spdlog::logger> file_logger;
 
 namespace kostal {
 

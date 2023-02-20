@@ -125,7 +125,7 @@ Status SyncServer::recv()
         for (int i = 0; i < read_length; i++) {
             m_recvMsg += m_recvBuffer[i];
         }
-        // std::cout<<"The recv msg is: "<<m_recvMsg<<std::endl;
+        std::cout<<"The recv msg is: "<<m_recvMsg<<std::endl;
 
         boost::asio::write(*m_socketPtr,
             boost::asio::buffer(m_replyMsg, m_replyMsg.size()), m_ec);

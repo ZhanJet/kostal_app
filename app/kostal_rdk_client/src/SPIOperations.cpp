@@ -6,6 +6,7 @@
 
 #include "SPIOperations.hpp"
 #include "ControlSPI.hpp"
+#include <chrono>
 
 namespace kostal {
 
@@ -121,28 +122,26 @@ Status SPIOperations::buildSPIConnection()
     return SUCCESS;
 }
 
-Status SPIOperations::collectSPIData(SPIData* spiDataPtr, flexiv::Log* logPtr)
+Status SPIOperations::collectSPIData(SPIData* spiDataPtr, std::list<SPIData>* spiDataListPtr, flexiv::Log* logPtr)
 {
     // Global atomic switch
     while (g_collectSwitch) {
         uint8_t read_buffer[10240] = {0};
-        int32_t read_data_num = 0;
-        int ret
-            = VSI_SlaveReadBytes(VSI_USBSPI, 0, read_buffer, &read_data_num, 2);
+        int32_t read_data_num = 16;
+        int ret = 0;//VSI_SlaveReadBytes(VSI_USBSPI, 0, read_buffer, &read_data_num, 2);
 
         if (ret != ERR_SUCCESS) {
             logPtr->error("The SPI device read data error");
             return SPI;
         }
         // filter and only keep data with 16 bytes length
-        if (read_data_num == 16) {
-            std::lock_guard<std::mutex> lock(g_kostalDataMutex);
-            uint8_t SPISensorBuffer[16] = {0};
+//        if (read_data_num == 16) {
             for (int i = 0; i < read_data_num; i++) {
-                SPISensorBuffer[i] = read_buffer[i];
+                spiDataPtr->SPISensor[i] = i;//read_buffer[i];
             }
-            *spiDataPtr = SPISensorBuffer;
-        }
+            spiDataPtr->timestamp = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+            spiDataListPtr->push_back(*spiDataPtr);
+//        }
     }
     return SUCCESS;
 }

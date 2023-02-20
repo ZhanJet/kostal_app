@@ -48,8 +48,7 @@ public:
      * @return Status code
      */
     Status collectSyncData(flexiv::Robot* robotPtr, RobotData* robotDataPtr,
-        std::list<RobotData>* robotDataListPtr, SPIData* spiDataPtr,
-        std::list<SPIData>* spiDataListPtr);
+        std::list<RobotData>* robotDataListPtr);
 
     /**
      * @brief Check whether robot has this plan in list

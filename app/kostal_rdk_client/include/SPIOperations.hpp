@@ -45,7 +45,7 @@ public:
      * @param[in] spiDataPtr spi data's pointer
      * @return Status code
      */
-    Status collectSPIData(SPIData* spiDataPtr, flexiv::Log* logPtr);
+    Status collectSPIData(SPIData* spiDataPtr, std::list<SPIData>* spiDataListPtr, flexiv::Log* logPtr);
 };
 
 } /* namespace kostal */

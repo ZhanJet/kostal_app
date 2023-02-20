@@ -52,15 +52,14 @@ Status WriteExcel::writeDataToExcel(std::string taskType, std::string taskName,
     }
 
     std::fstream excelFile;
-    std::string filePath = UPLOADADDRESS;
-    std::string excelFileName
-        = filePath + taskType + "/" + taskName + getTime() + ".csv";
-    std::cout << "The generated file path is: " << excelFileName << std::endl;
-    excelFile.open(excelFileName, std::ios::out);
-    if (!excelFile.is_open()) {
-        logPtr->error("The associated excel file is not created correctly");
-        return CSV;
-    }
+//    std::string filePath = UPLOADADDRESS;
+//    std::string excelFileName = filePath + taskType + "/" + taskName + getTime() + ".csv";
+//    std::cout << "The generated file path is: " << excelFileName << std::endl;
+    excelFile.open("1.txt", std::ios::out);
+//    if (!excelFile.is_open()) {
+//        logPtr->error("The associated excel file is not created correctly");
+//        return CSV;
+//    }
 
     // Header
     excelFile << "NodeName"
@@ -134,67 +133,108 @@ Status WriteExcel::writeDataToExcel(std::string taskType, std::string taskName,
               << "SPI1-6"
               << ","
               << "SPI1-7"
-              << "," << std::endl;
+              << ","
+              << "timestamp"
+              << std::endl;
 
-    long index = 0;
-    while (robotDataListPtr->size() > 0) {
+    std::list<RobotData>::iterator i_robotData;
+    std::list<SPIData>::iterator i_spiData = spiDataListPtr->begin();
 
-        RobotData robotDataRow = robotDataListPtr->front();
-        SPIData spiDataRow = spiDataListPtr->front();
+    int64_t spiTimestamp = (*i_spiData).timestamp;
+    std::list<SPIData>::iterator i_spiDataSecond = std::next(i_spiData, 1);
+    int64_t nextSpiTimestamp = (*i_spiDataSecond).timestamp;
 
-        // node name
-        excelFile << robotDataRow.nodeName << ",";
+    int index = 0;
 
-        // Index increase
-        excelFile << std::to_string(index) << ",";
+    for(i_robotData = robotDataListPtr->begin(); i_robotData != robotDataListPtr->end(); i_robotData++)
+    {
+        int64_t robotTimestamp = (*i_robotData).timestamp;
 
-        // tcp xyz
-        excelFile << robotDataRow.tcpPose[0] << ",";
-        excelFile << robotDataRow.tcpPose[1] << ",";
-        excelFile << robotDataRow.tcpPose[2] << ",";
+        std::list<SPIData>::iterator i_spiDataNext = i_spiData;
+        i_spiDataNext++;
 
-        // tcp euler data
-        double quaternionTcp[4]
-            = {robotDataRow.tcpPose[3], robotDataRow.tcpPose[4],
-                robotDataRow.tcpPose[5], robotDataRow.tcpPose[6]};
-        auto eulerTcp = quaternionToEuler(quaternionTcp);
-        excelFile << eulerTcp[0] << ",";
-        excelFile << eulerTcp[1] << ",";
-        excelFile << eulerTcp[2] << ",";
+        if(i_spiDataNext != spiDataListPtr->end())
+        {
+            if(nextSpiTimestamp < robotTimestamp)
+            {
+                write2Excel(excelFile, index, i_robotData, i_spiDataNext);
 
-        // flange xyz
-        excelFile << robotDataRow.flangePose[0] << ",";
-        excelFile << robotDataRow.flangePose[1] << ",";
-        excelFile << robotDataRow.flangePose[2] << ",";
+                i_spiData++;
+                spiTimestamp = (*i_spiData).timestamp;
 
-        // flange euler data
-        double quaternionFlange[4]
-            = {robotDataRow.flangePose[3], robotDataRow.flangePose[4],
-                robotDataRow.flangePose[5], robotDataRow.flangePose[6]};
-        auto eulerFlange = quaternionToEuler(quaternionFlange);
-        excelFile << eulerFlange[0] << ",";
-        excelFile << eulerFlange[1] << ",";
-        excelFile << eulerFlange[2] << ",";
+                std::list<SPIData>::iterator i_spiDataNext2 = i_spiData;
+                i_spiDataNext2++;
 
-        // raw sensor data
-        for (int i = 0; i < 6; i++) {
-            excelFile << robotDataRow.rawDataForceSensor[i] << ",";
+                if(i_spiDataNext2 != spiDataListPtr->end())
+                {
+                    nextSpiTimestamp = (*i_spiDataNext2).timestamp;
+                }
+            }
+            else
+            {
+                write2Excel(excelFile, index, i_robotData, i_spiData);
+            }
+        }
+        else
+        {
+            write2Excel(excelFile, index, i_robotData, i_spiData);
         }
 
-        // spi sensor data
-        for (int i = 0; i < 16; i++) {
-            excelFile << std::setfill('0') << std::setw(2) << std::right
-                      << std::hex;
-            excelFile << +static_cast<uint8_t>(spiDataRow.SPISensor[i]) << ",";
-        }
-        // finish this line
-        excelFile << std::endl;
         index++;
-        robotDataListPtr->pop_front();
-        spiDataListPtr->pop_front();
     }
+
     excelFile.close();
     return SUCCESS;
+}
+
+void WriteExcel::write2Excel(std::fstream &excelFile, int index, std::list<RobotData>::iterator i_robotData, std::list<SPIData>::iterator i_spiData)
+{
+    // node name
+    excelFile << (*i_robotData).nodeName << ",";
+
+    // Index increase
+    excelFile << std::to_string(index) << ",";
+
+    // tcp xyz
+    excelFile << (*i_robotData).tcpPose[0] << ",";
+    excelFile << (*i_robotData).tcpPose[1] << ",";
+    excelFile << (*i_robotData).tcpPose[2] << ",";
+
+    // tcp euler data
+    double quaternionTcp[4] = {(*i_robotData).tcpPose[3], (*i_robotData).tcpPose[4], (*i_robotData).tcpPose[5], (*i_robotData).tcpPose[6]};
+    auto eulerTcp = quaternionToEuler(quaternionTcp);
+    excelFile << eulerTcp[0] << ",";
+    excelFile << eulerTcp[1] << ",";
+    excelFile << eulerTcp[2] << ",";
+
+    // flange xyz
+    excelFile << (*i_robotData).flangePose[0] << ",";
+    excelFile << (*i_robotData).flangePose[1] << ",";
+    excelFile << (*i_robotData).flangePose[2] << ",";
+
+    // flange euler data
+    double quaternionFlange[4] = {(*i_robotData).flangePose[3], (*i_robotData).flangePose[4], (*i_robotData).flangePose[5], (*i_robotData).flangePose[6]};
+    auto eulerFlange = quaternionToEuler(quaternionFlange);
+    excelFile << eulerFlange[0] << ",";
+    excelFile << eulerFlange[1] << ",";
+    excelFile << eulerFlange[2] << ",";
+
+    // raw sensor data
+    for (int i = 0; i < 6; i++)
+    {
+        excelFile << (*i_robotData).rawDataForceSensor[i] << ",";
+    }
+
+    // spi sensor data
+    for (int j = 0; j < 16; j++)
+    {
+        excelFile << std::setfill('0') << std::setw(2) << std::right << std::hex;
+        excelFile << +static_cast<uint8_t>((*i_spiData).SPISensor[j]) << ",";
+    }
+
+    excelFile << std::to_string((*i_robotData).timestamp);
+
+    excelFile << std::endl;
 }
 
 Status WriteExcel::divideData(std::list<RobotData>* robotDataListPtr,
@@ -249,16 +289,16 @@ Status WriteExcel::writeLeverDataToExcel(std::string taskType,
 {
     // Create excel file in assigned address
     std::fstream excelFile;
-    std::string filePath = UPLOADADDRESS;
-    std::string excelFileName
-        = filePath + taskType + "/" + taskName + getTime() + leverSide + ".csv";
-    std::cout << "The generated file path is: " << excelFileName << std::endl;
-    excelFile.open(excelFileName, std::ios::out);
-    if (!excelFile.is_open()) {
-        logPtr->error("The associated " + leverSide
-                      + " excel file is not created correctly");
-        return CSV;
-    }
+//    std::string filePath = UPLOADADDRESS;
+//    std::string excelFileName
+//        = filePath + taskType + "/" + taskName + getTime() + leverSide + ".csv";
+//    std::cout << "The generated file path is: " << excelFileName << std::endl;
+    excelFile.open("2.txt", std::ios::out);
+//    if (!excelFile.is_open()) {
+//        logPtr->error("The associated " + leverSide
+//                      + " excel file is not created correctly");
+//        return CSV;
+//    }
 
     // Header
     excelFile << "NodeName"

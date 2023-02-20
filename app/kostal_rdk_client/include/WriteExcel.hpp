@@ -87,7 +87,8 @@ public:
         std::list<RobotData>* leftRobotDataListPtr,
         std::list<SPIData>* leftSPIDataListPtr,
         std::list<RobotData>* rightRobotDataListPtr,
-        std::list<SPIData>* rightSPIDataListPtr, flexiv::Log* logPtr);
+                         std::list<SPIData>* rightSPIDataListPtr, flexiv::Log* logPtr);
+    void write2Excel(std::fstream &excelFile, int index, std::list<RobotData>::iterator i_robotData, std::list<SPIData>::iterator i_spiData);
 };
 
 } /* namespace kostal */
