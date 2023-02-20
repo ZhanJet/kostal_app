@@ -95,6 +95,24 @@ extern const uint8_t g_redLight;
 extern const uint8_t g_greenLight;
 extern const uint8_t g_yellowLight;
 
+// The status of the testman_status light
+extern const uint8_t g_testmanGreyLight;
+extern const uint8_t g_testmanRedLight;
+extern const uint8_t g_testmanGreenLight;
+extern const uint8_t g_testmanYellowLight;
+
+// The status of the robot_status light
+extern const uint8_t g_robotGreyLight;
+extern const uint8_t g_robotRedLight;
+extern const uint8_t g_robotGreenLight;
+extern const uint8_t g_robotYellowLight;
+
+// The status of the spi_status light
+extern const uint8_t g_spiGreyLight;
+extern const uint8_t g_spiRedLight;
+extern const uint8_t g_spiGreenLight;
+extern const uint8_t g_spiYellowLight;
+
 // global mutext for spi data collection and robot data collection
 extern std::mutex g_kostalDataMutex;
 

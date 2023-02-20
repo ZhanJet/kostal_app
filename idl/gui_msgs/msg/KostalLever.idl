@@ -49,6 +49,15 @@ module kostal_gui_msgs
 
             // Whether Testman terminate system
             string terminate_status;
+
+            // Testman Status, can be DISCONNECTED, CONNECTED, BUSY, FAULT
+            // uint8 testman_status; 
+
+            // Robot Status, can be DISCONNECTED, CONNECTED, BUSY, FAULT
+            // uint8 robot_status; 
+
+            // SPI Status, can be DISCONNECTED, CONNECTED, BUSY, FAULT
+            // uint8 SPI_status; 
         };
     };
 };
