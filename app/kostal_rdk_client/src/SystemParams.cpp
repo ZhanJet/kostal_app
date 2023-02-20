@@ -62,26 +62,26 @@ const uint8_t g_greenLight = 50;
 
 const uint8_t g_yellowLight = 51;
 
-const uint8_t g_testmanGreyLight = 1001;
+const uint8_t g_testmanGreyLight = 101;
 
-const uint8_t g_testmanRedLight = 1002;
+const uint8_t g_testmanRedLight = 102;
 
-const uint8_t g_testmanGreenLight = 1003;
+const uint8_t g_testmanGreenLight = 103;
 
-const uint8_t g_testmanYellowLight = 1004;
+const uint8_t g_testmanYellowLight = 104;
 
-const uint8_t g_robotGreyLight = 1005;
+const uint8_t g_robotGreyLight = 105;
 
-const uint8_t g_robotRedLight = 1006;
+const uint8_t g_robotRedLight = 106;
 
-const uint8_t g_robotGreenLight = 1007;
+const uint8_t g_robotGreenLight = 107;
 
-const uint8_t g_robotYellowLight = 1008;
+const uint8_t g_robotYellowLight = 108;
 
-const uint8_t g_spiGreyLight = 1009;
+const uint8_t g_spiGreyLight = 109;
 
-const uint8_t g_spiRedLight = 1010;
+const uint8_t g_spiRedLight = 110;
 
-const uint8_t g_spiGreenLight = 1011;
+const uint8_t g_spiGreenLight = 111;
 
-const uint8_t g_spiYellowLight = 1012;
+const uint8_t g_spiYellowLight = 112;
