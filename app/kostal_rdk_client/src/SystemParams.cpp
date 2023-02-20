@@ -62,13 +62,13 @@ const uint8_t g_greenLight = 50;
 
 const uint8_t g_yellowLight = 51;
 
-const uint8_t g_testmanGreyLight = 101;
+const uint8_t g_testmanGreyLight = 101; //断开
 
-const uint8_t g_testmanRedLight = 102;
+const uint8_t g_testmanRedLight = 102; //错误
 
-const uint8_t g_testmanGreenLight = 103;
+const uint8_t g_testmanGreenLight = 103; //连接
 
-const uint8_t g_testmanYellowLight = 104;
+const uint8_t g_testmanYellowLight = 104; //运行
 
 const uint8_t g_robotGreyLight = 105;
 

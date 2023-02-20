@@ -45,7 +45,7 @@ set(ALL_GUI_SOURCE ${QT_SOURCE} ${GENERATED_IDL_GUI_SOURCE} ${GENERATED_IDL_PLAN
 FILE(GLOB UI_FILES "./src/*.ui")
 
 # Add other resources into resource
-qt5_add_resources(ALL_GUI_SOURCE ${flexiv_app_guis_resources_path}/qt_flexiv_theme/resources.qrc)
+qt5_add_resources(ALL_GUI_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/src/res.qrc ${flexiv_app_guis_resources_path}/qt_flexiv_theme/resources.qrc)
 
 # Add an executable to the project using the specified source files.
 add_executable(${PROJECT_NAME} ${ALL_GUI_SOURCE} ${UI_FILES})

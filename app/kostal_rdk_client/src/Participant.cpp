@@ -22,6 +22,27 @@ void Participant::publishMsg(std::shared_ptr<RdkClientPublisher> publisher,
     publisher->Publish((void*)pub_msg);
 }
 
+void Participant::publishTestmanMsg(std::shared_ptr<RdkClientPublisher> publisher,
+    KostalMsg* pub_msg, uint8_t testmanStatusLight)
+{
+    pub_msg->testman_status(testmanStatusLight);
+    publisher->Publish((void*)pub_msg);
+}
+
+void Participant::publishRobotMsg(std::shared_ptr<RdkClientPublisher> publisher,
+    KostalMsg* pub_msg, uint8_t robotStatusLight)
+{
+    pub_msg->robot_status(robotStatusLight);
+    publisher->Publish((void*)pub_msg);
+}
+
+void Participant::publishSpiMsg(std::shared_ptr<RdkClientPublisher> publisher,
+    KostalMsg* pub_msg, uint8_t spiStatusLight)
+{
+    pub_msg->spi_status(spiStatusLight);
+    publisher->Publish((void*)pub_msg);
+}
+
 void Participant::publishMsg(
     std::shared_ptr<RdkClientPublisher> publisher, KostalMsg* pub_msg)
 {

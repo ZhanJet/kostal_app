@@ -10,6 +10,15 @@ module kostal_gui_msgs
         {
             // system status, can be IDLE, BUSY, FAULT, DONE
             uint8 status;
+            
+            // Testman Status, can be DISCONNECTED, CONNECTED, BUSY, FAULT
+            uint8 testman_status; 
+
+            // Robot Status, can be DISCONNECTED, CONNECTED, BUSY, FAULT
+            uint8 robot_status; 
+
+            // SPI Status, can be DISCONNECTED, CONNECTED, BUSY, FAULT
+            uint8 spi_status; 
 
             // Measured TCP pose in base frame
             double tcp_pose[7];
@@ -49,15 +58,6 @@ module kostal_gui_msgs
 
             // Whether Testman terminate system
             string terminate_status;
-
-            // Testman Status, can be DISCONNECTED, CONNECTED, BUSY, FAULT
-            // uint8 testman_status; 
-
-            // Robot Status, can be DISCONNECTED, CONNECTED, BUSY, FAULT
-            // uint8 robot_status; 
-
-            // SPI Status, can be DISCONNECTED, CONNECTED, BUSY, FAULT
-            // uint8 SPI_status; 
         };
     };
 };

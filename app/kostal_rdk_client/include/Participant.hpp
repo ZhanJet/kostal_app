@@ -83,7 +83,11 @@ public:
      * @param[in] task_type the pointer task type that will be published
      */
     void publishMsg(std::shared_ptr<RdkClientPublisher> publisher,
-        KostalMsg* pub_msg, std::string* task_name, std::string* task_type);
+                    KostalMsg* pub_msg, std::string* task_name, std::string* task_type);
+
+    void publishTestmanMsg(std::shared_ptr<RdkClientPublisher> publisher, KostalMsg *pub_msg, uint8_t testmanStatusLight);
+    void publishRobotMsg(std::shared_ptr<RdkClientPublisher> publisher, KostalMsg *pub_msg, uint8_t robotStatusLight);
+    void publishSpiMsg(std::shared_ptr<RdkClientPublisher> publisher, KostalMsg *pub_msg, uint8_t spiStatusLight);
 };
 
 } /* namespace kostal */
