@@ -64,16 +64,14 @@ public:
      * @param[in] pub_msg the message that will be published with
      * @param[in] statusLight Light status
      */
-    void publishMsg(std::shared_ptr<RdkClientPublisher> publisher,
-        KostalMsg* pub_msg, uint8_t statusLight);
+    void publishMsg(std::shared_ptr<RdkClientPublisher> publisher, KostalMsg* pub_msg, uint8_t statusLight);
 
     /**
      * @brief Publish messages with assigned value
      * @param[in] publisher shared pointer of the RdkClientPublisher
      * @param[in] pub_msg the message that will be published with
      */
-    void publishMsg(
-        std::shared_ptr<RdkClientPublisher> publisher, KostalMsg* pub_msg);
+    void publishMsg(std::shared_ptr<RdkClientPublisher> publisher, KostalMsg* pub_msg);
 
     /**
      * @brief Publish messages with assigned value
@@ -82,11 +80,30 @@ public:
      * @param[in] task_name the pointer task name that will be published
      * @param[in] task_type the pointer task type that will be published
      */
-    void publishMsg(std::shared_ptr<RdkClientPublisher> publisher,
-                    KostalMsg* pub_msg, std::string* task_name, std::string* task_type);
+    void publishMsg(std::shared_ptr<RdkClientPublisher> publisher, KostalMsg* pub_msg, std::string* task_name, std::string* task_type);
 
+    /**
+     * @brief Publish messages with assigned value
+     * @param[in] publisher shared pointer of the RdkClientPublisher
+     * @param[in] pub_msg the message that will be published with
+     * @param[in] testmanStatusLight testman light status
+     */
     void publishTestmanMsg(std::shared_ptr<RdkClientPublisher> publisher, KostalMsg *pub_msg, uint8_t testmanStatusLight);
+
+    /**
+     * @brief Publish messages with assigned value
+     * @param[in] publisher shared pointer of the RdkClientPublisher
+     * @param[in] pub_msg the message that will be published with
+     * @param[in] robotStatusLight robot light status
+     */
     void publishRobotMsg(std::shared_ptr<RdkClientPublisher> publisher, KostalMsg *pub_msg, uint8_t robotStatusLight);
+
+    /**
+     * @brief Publish messages with assigned value
+     * @param[in] publisher shared pointer of the RdkClientPublisher
+     * @param[in] pub_msg the message that will be published with
+     * @param[in] spiStatusLight spi light status
+     */
     void publishSpiMsg(std::shared_ptr<RdkClientPublisher> publisher, KostalMsg *pub_msg, uint8_t spiStatusLight);
 };
 

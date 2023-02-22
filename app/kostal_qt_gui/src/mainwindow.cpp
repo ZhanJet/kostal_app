@@ -133,7 +133,7 @@ void MainWindow::updateSpiData(const kostal_gui_msgs::msg::KostalLever *subscrib
 
 void MainWindow::updateTestmanData(const kostal_gui_msgs::msg::KostalLever *subscribedMsg)
 {
-    int status = (int)(subscribedMsg->robot_status());
+    int status = (int)(subscribedMsg->testman_status());
     qDebug() << "updateTestmanData status" << status;
     switch (status) {
     case 101:

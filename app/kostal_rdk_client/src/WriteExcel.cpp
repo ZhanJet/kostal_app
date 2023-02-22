@@ -40,7 +40,6 @@ Status WriteExcel::writeDataToExcel(std::string taskType, std::string taskName,
     std::list<RobotData>* robotDataListPtr, std::list<SPIData>* spiDataListPtr,
     flexiv::Log* logPtr)
 {
-
     if (spiDataListPtr->size() == 0) {
         logPtr->error("The collected spi data list is null, exiting...");
         return CSV;
@@ -52,14 +51,14 @@ Status WriteExcel::writeDataToExcel(std::string taskType, std::string taskName,
     }
 
     std::fstream excelFile;
-//    std::string filePath = UPLOADADDRESS;
-//    std::string excelFileName = filePath + taskType + "/" + taskName + getTime() + ".csv";
-//    std::cout << "The generated file path is: " << excelFileName << std::endl;
-    excelFile.open("1.txt", std::ios::out);
-//    if (!excelFile.is_open()) {
-//        logPtr->error("The associated excel file is not created correctly");
-//        return CSV;
-//    }
+    std::string filePath = UPLOADADDRESS;
+    std::string excelFileName = filePath + taskType + "/" + taskName + getTime() + ".csv";
+    std::cout << "The generated file path is: " << excelFileName << std::endl;
+    excelFile.open(excelFileName, std::ios::out);
+    if (!excelFile.is_open()) {
+        logPtr->error("The associated excel file is not created correctly");
+        return CSV;
+    }
 
     // Header
     excelFile << "NodeName"
@@ -289,16 +288,14 @@ Status WriteExcel::writeLeverDataToExcel(std::string taskType,
 {
     // Create excel file in assigned address
     std::fstream excelFile;
-//    std::string filePath = UPLOADADDRESS;
-//    std::string excelFileName
-//        = filePath + taskType + "/" + taskName + getTime() + leverSide + ".csv";
-//    std::cout << "The generated file path is: " << excelFileName << std::endl;
-    excelFile.open("2.txt", std::ios::out);
-//    if (!excelFile.is_open()) {
-//        logPtr->error("The associated " + leverSide
-//                      + " excel file is not created correctly");
-//        return CSV;
-//    }
+    std::string filePath = UPLOADADDRESS;
+    std::string excelFileName = filePath + taskType + "/" + taskName + getTime() + leverSide + ".csv";
+    std::cout << "The generated file path is: " << excelFileName << std::endl;
+    excelFile.open(excelFileName, std::ios::out);
+    if (!excelFile.is_open()) {
+        logPtr->error("The associated " + leverSide + " excel file is not created correctly");
+        return CSV;
+    }
 
     // Header
     excelFile << "NodeName"

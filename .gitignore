@@ -5,3 +5,4 @@ install/
 generated/
 include/flexiv/app_guis/config.h
 *.txt.user
+deploy/

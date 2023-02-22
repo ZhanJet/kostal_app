@@ -357,6 +357,8 @@ void Communications::stateMachine(flexiv::Robot* robotPtr)
                     "Flexiv system server closed this connection safely");
                 // m_parHandler.publishMsg(m_publisher, &pub_msg, g_greyLight);
                 m_parHandler.publishTestmanMsg(m_publisher, &pub_msg, g_testmanGreyLight);
+                m_parHandler.publishRobotMsg(m_publisher, &pub_msg, g_robotGreyLight);
+                m_parHandler.publishSpiMsg(m_publisher, &pub_msg, g_spiGreyLight);
                 return;
             }
 
@@ -379,6 +381,8 @@ void Communications::stateMachine(flexiv::Robot* robotPtr)
                     m_flexivStatus = FAULT;
                     // m_parHandler.publishMsg(m_publisher, &pub_msg, g_redLight);
                     m_parHandler.publishTestmanMsg(m_publisher, &pub_msg, g_testmanRedLight);
+                    m_parHandler.publishRobotMsg(m_publisher, &pub_msg, g_robotGreyLight);
+                    m_parHandler.publishSpiMsg(m_publisher, &pub_msg, g_spiGreyLight);
 
                     return;
                 }
