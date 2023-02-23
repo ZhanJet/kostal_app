@@ -6,6 +6,8 @@ int main(int argc, char* argv[])
 {
     QApplication a(argc, argv);
 
+    system("sudo ./kostal_rdk_client &");
+
     QTranslator translator;
     if (translator.load(":/zh_cn.qm"))
     {

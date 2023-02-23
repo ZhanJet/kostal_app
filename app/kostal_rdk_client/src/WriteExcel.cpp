@@ -139,6 +139,8 @@ Status WriteExcel::writeDataToExcel(std::string taskType, std::string taskName,
     std::list<RobotData>::iterator i_robotData;
     std::list<SPIData>::iterator i_spiData = spiDataListPtr->begin();
 
+    firstTimestamp = (*i_spiData).timestamp;
+
     int64_t spiTimestamp = (*i_spiData).timestamp;
     std::list<SPIData>::iterator i_spiDataSecond = std::next(i_spiData, 1);
     int64_t nextSpiTimestamp = (*i_spiDataSecond).timestamp;
@@ -231,7 +233,7 @@ void WriteExcel::write2Excel(std::fstream &excelFile, int index, std::list<Robot
         excelFile << +static_cast<uint8_t>((*i_spiData).SPISensor[j]) << ",";
     }
 
-    excelFile << std::to_string((*i_robotData).timestamp);
+    excelFile << std::to_string((*i_robotData).timestamp - firstTimestamp);
 
     excelFile << std::endl;
 }
