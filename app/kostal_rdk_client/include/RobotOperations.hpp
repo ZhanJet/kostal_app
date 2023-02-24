@@ -7,6 +7,7 @@
 #define FLEXIVRDK_ROBOTOPERATIONS_HPP_
 
 #include "KostalStates.hpp"
+#include "KostalLog.hpp"
 
 namespace kostal {
 

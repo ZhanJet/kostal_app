@@ -133,7 +133,7 @@ Status SPIOperations::collectSPIData(SPIData* spiDataPtr, std::list<SPIData>* sp
         int ret = VSI_SlaveReadBytes(VSI_USBSPI, 0, read_buffer, &read_data_num, 10);
 
         if (ret != ERR_SUCCESS) {
-            logPtr->error("The SPI device read data error");
+            k_log->error("The SPI device read data error");
             return SPI;
         }
         // filter and only keep data with 16 bytes length

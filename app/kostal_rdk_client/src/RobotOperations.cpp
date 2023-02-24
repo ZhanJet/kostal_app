@@ -14,14 +14,14 @@ Status RobotOperations::buildRobotConnection(
 {
     // Check whether the robot is connected or not
     if (robotPtr->isConnected() != true) {
-        logPtr->error("The robot is not connected");
+        k_log->error("The robot is not connected");
         return ROBOT;
     } else
-        logPtr->info("The robot is now connected");
+        k_log->info("The robot is now connected");
 
     // Clear fault on robot server if any
     if (robotPtr->isFault()) {
-        logPtr->warn("Robot is facing a fault, trying to clear the fault...");
+        k_log->warn("Robot is facing a fault, trying to clear the fault...");
 
         // Try to clear the fault
         robotPtr->clearFault();
@@ -29,19 +29,19 @@ Status RobotOperations::buildRobotConnection(
 
         // Check fault again
         if (robotPtr->isFault()) {
-            logPtr->error(
+            k_log->error(
                         "===================================================");
-            logPtr->error("Robot's fault cannot be cleared, exiting ...");
+            k_log->error("Robot's fault cannot be cleared, exiting ...");
 
             return ROBOT;
         }
-        logPtr->info("Fault on robot server is cleared");
+        k_log->info("Fault on robot server is cleared");
     }
     try {
         // robotPtr->enable();
     } catch (const flexiv::Exception& e) {
-        logPtr->error(e.what());
-        logPtr->error("The robot can not be enabled");
+        k_log->error(e.what());
+        k_log->error("The robot can not be enabled");
         return ROBOT;
     }
 
@@ -49,7 +49,7 @@ Status RobotOperations::buildRobotConnection(
     while (!robotPtr->isOperational()) {
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
-    logPtr->info("The robot is now operational");
+    k_log->info("The robot is now operational");
 
     // Set mode after robot is operational
     robotPtr->setMode(flexiv::MODE_PLAN_EXECUTION);
@@ -58,7 +58,7 @@ Status RobotOperations::buildRobotConnection(
     while (robotPtr->getMode() != flexiv::MODE_PLAN_EXECUTION) {
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
-    logPtr->info("The robot is now in plan execution mode");
+    k_log->info("The robot is now in plan execution mode");
 
     return SUCCESS;
 }
@@ -68,18 +68,18 @@ Status RobotOperations::clearTinyFault(
 {
     // Clear fault on robot server if any
     if (robotPtr->isFault()) {
-        logPtr->warn("Robot is facing a fault, trying to clear the fault...");
+        k_log->warn("Robot is facing a fault, trying to clear the fault...");
         // Try to clear the fault
         robotPtr->clearFault();
         std::this_thread::sleep_for(std::chrono::seconds(2));
         // Check again
         if (robotPtr->isFault()) {
-            logPtr->error(
+            k_log->error(
                         "===================================================");
-            logPtr->error("Robot's fault cannot be cleared, exiting ...");
+            k_log->error("Robot's fault cannot be cleared, exiting ...");
             return ROBOT;
         } else {
-            logPtr->info("Fault on robot server is cleared");
+            k_log->info("Fault on robot server is cleared");
         }
     }
 
@@ -135,8 +135,8 @@ bool RobotOperations::checkRobotPlan(
 
     if (std::find(planList.begin(), planList.end(), planName)
             == planList.end()) {
-        logPtr->error("=================================================");
-        logPtr->error("The robot does not have planName: " + planName);
+        k_log->error("=================================================");
+        k_log->error("The robot does not have planName: " + planName);
         return false;
     }
     // if exists, return true

@@ -85,3 +85,11 @@ const uint8_t g_spiRedLight = 110;
 const uint8_t g_spiGreenLight = 111;
 
 const uint8_t g_spiYellowLight = 112;
+
+std::string g_loggerName = "kostalLog";
+
+std::string g_loggerDir = "/home/kostal/logfile/";
+
+const int g_maxSize = 10*1024*1024;
+
+const int g_filesCount = 100;

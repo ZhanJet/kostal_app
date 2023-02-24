@@ -10,6 +10,7 @@
 #include "SyncTask.hpp"
 #include "WriteExcel.hpp"
 #include "Participant.hpp"
+#include "KostalLog.hpp"
 
 namespace kostal {
 
@@ -82,7 +83,7 @@ private:
     boost::asio::thread_pool t_pool;
 
     // kostal log instance
-    kostal::KostalLog k_log;
+    // kostal::KostalLog k_log;
 
     // json message handler instance
     kostal::JsonParser m_parserHandler;

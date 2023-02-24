@@ -8,6 +8,7 @@
 
 #include "SPIOperations.hpp"
 #include "RobotOperations.hpp"
+#include "KostalLog.hpp"
 
 namespace kostal {
 

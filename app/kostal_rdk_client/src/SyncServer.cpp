@@ -25,7 +25,7 @@ Status SyncServer::init()
             new boost::asio::ip::tcp::acceptor(m_ioContext, m_endpoint));
 
         // print hint log
-        k_log.info("Waiting for client to send token...");
+        k_log->info("Waiting for client to send token...");
 
         // this is a block function, it will block until a new connection is
         // built successfully or an error happens
@@ -43,13 +43,13 @@ Status SyncServer::init()
 
             // If the client close the socket
             if (m_ec == boost::asio::error::eof) {
-                k_log.error(
+                k_log->error(
                     "===================================================");
-                k_log.error("The connection is closed cleanly by client");
+                k_log->error("The connection is closed cleanly by client");
                 return SOCKET;
                 // If there is some other error message
             } else if (m_ec) {
-                k_log.error("Socket reads message error: " + m_ec.message());
+                k_log->error("Socket reads message error: " + m_ec.message());
                 return SOCKET;
             }
 
@@ -62,18 +62,18 @@ Status SyncServer::init()
             // parse the received spi config
             std::string recvToken = "";
             result
-                = m_parserHandler.parseSPIJSON(&m_recvMsg, &recvToken, &k_log);
+                = m_parserHandler.parseSPIJSON(&m_recvMsg, &recvToken, k_log);
 
             // Judge whether the received message is matching the token, if
             // not match, reply "wrong" to client
             if (recvToken != m_token) {
-                k_log.warn(
+                k_log->warn(
                     "The client is sending an unkown token: " + recvToken);
                 const char wrongReply[6] = "wrong";
                 boost::asio::write(*m_socketPtr,
                     boost::asio::buffer(wrongReply, std::strlen(wrongReply)),
                     m_ec);
-                k_log.info("Waiting for client to resend token...");
+                k_log->info("Waiting for client to resend token...");
                 continue;
             }
 
@@ -84,22 +84,22 @@ Status SyncServer::init()
 
             // If the client close the socket
             if (m_ec == boost::asio::error::eof) {
-                k_log.error(
+                k_log->error(
                     "===================================================");
-                k_log.error("The connection is closed cleanly by client");
+                k_log->error("The connection is closed cleanly by client");
                 return SOCKET;
                 // If there is some other error message
             } else if (m_ec) {
-                k_log.error("Socket writes message error: " + m_ec.message());
+                k_log->error("Socket writes message error: " + m_ec.message());
                 return SOCKET;
             }
 
             // The shakehand is finished
-            k_log.info("The initialization is completed");
+            k_log->info("The initialization is completed");
             return SUCCESS;
         }
     } catch (std::exception& e) {
-        k_log.error(e.what());
+        k_log->error(e.what());
         return SOCKET;
     }
 }
@@ -112,12 +112,12 @@ Status SyncServer::recv()
         size_t read_length = m_socketPtr->read_some(
             boost::asio::buffer(m_recvBuffer, msgLength), m_ec);
         if (m_ec == boost::asio::error::eof) {
-            k_log.error("===================================================");
-            k_log.error(
+            k_log->error("===================================================");
+            k_log->error(
                 "The connection is closed cleanly by client or timeout");
             return SOCKET;
         } else if (m_ec) {
-            k_log.error("Socket reads message error: " + m_ec.message());
+            k_log->error("Socket reads message error: " + m_ec.message());
             return SOCKET;
         }
 
@@ -130,18 +130,18 @@ Status SyncServer::recv()
         boost::asio::write(*m_socketPtr,
             boost::asio::buffer(m_replyMsg, m_replyMsg.size()), m_ec);
         if (m_ec == boost::asio::error::eof) {
-            k_log.error("===================================================");
-            k_log.error(
+            k_log->error("===================================================");
+            k_log->error(
                 "The connection is closed cleanly by client or timeout");
             return SOCKET;
         } else if (m_ec) {
-            k_log.error("Socket writes message error: " + m_ec.message());
+            k_log->error("Socket writes message error: " + m_ec.message());
             return SOCKET;
         }
 
         return SUCCESS;
     } catch (std::exception& e) {
-        k_log.error(e.what());
+        k_log->error(e.what());
         return SOCKET;
     }
 }
@@ -157,8 +157,8 @@ Status SyncServer::monitor()
 
     // if the situation is timeout
     if (status == std::future_status::timeout) {
-        k_log.error("===================================================");
-        k_log.error("The connection with client is timeout...");
+        k_log->error("===================================================");
+        k_log->error("The connection with client is timeout...");
         this->disconnect();
         return SOCKET;
 
@@ -167,7 +167,7 @@ Status SyncServer::monitor()
 
         // check whether the async task is successful
         if (result.get() != SUCCESS) {
-            k_log.error("The receiving of client's message fails...");
+            k_log->error("The receiving of client's message fails...");
             this->disconnect();
             return SOCKET;
         } else {
@@ -175,7 +175,7 @@ Status SyncServer::monitor()
             return SUCCESS;
         }
     } else {
-        k_log.error("The future status is deferred...");
+        k_log->error("The future status is deferred...");
         this->disconnect();
         return SOCKET;
     }
@@ -194,7 +194,7 @@ unsigned short SyncServer::getPortNumber()
 std::string SyncServer::getRecvMsg()
 {
     if (m_recvMsg.empty()) {
-        k_log.warn("The received message is empty");
+        k_log->warn("The received message is empty");
     }
     return m_recvMsg;
 }
@@ -202,7 +202,7 @@ std::string SyncServer::getRecvMsg()
 std::string SyncServer::getReplyMsg()
 {
     if (m_replyMsg.empty()) {
-        k_log.warn("The reply message is empty");
+        k_log->warn("The reply message is empty");
     }
     return m_replyMsg;
 }
@@ -215,7 +215,7 @@ void SyncServer::clearMsg()
 void SyncServer::setReplyMsg(std::string reply)
 {
     if (reply.empty()) {
-        k_log.error("The server is sending empty response");
+        k_log->error("The server is sending empty response");
         m_replyMsg = "FAULT";
     }
     m_replyMsg = reply;
@@ -231,7 +231,7 @@ void SyncServer::disconnect()
     // just close socket solely
     m_socketPtr->close(m_ec);
     if (m_ec) {
-        k_log.error(m_ec.message());
+        k_log->error(m_ec.message());
     }
 
     // reset socket and acceptor

@@ -44,7 +44,7 @@ Status SyncTask::runScheduler(flexiv::Robot* robotPtr, SPIData* spiDataPtr,
     // Wait for threads till the end
     spiThread.join();
     robotThread.join();
-    logPtr->info("The sync task is finished by scheduler");
+    k_log->info("The sync task is finished by scheduler");
 
     return SUCCESS;
 }

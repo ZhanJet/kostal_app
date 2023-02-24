@@ -7,10 +7,11 @@
 #define FLEXIVRDK_KOSTALLOG_HPP_
 
 #include "SystemParams.hpp"
-#include <spdlog/sinks/stdout_color_sinks.h>
-#include <spdlog/sinks/basic_file_sink.h>
 
-extern std::shared_ptr<spdlog::logger> file_logger;
+#if defined (k_log) 
+#undef k_log
+#endif
+#define k_log (kostal::KostalLog::getInstance())
 
 namespace kostal {
 
@@ -18,11 +19,25 @@ namespace kostal {
  * @class KostalLog
  * @brief Loggers to print messages with timestamp, for kostal project only
  */
+
+ // get current time in time_t format
+extern std::string getTime();
+
 class KostalLog
 {
 public:
-    KostalLog() = default;
-    virtual ~KostalLog() = default;
+
+    /**
+     * @brief Get KostalLog instance by only header
+     * @return KostalLog instance 
+     */
+    static KostalLog * getInstance();
+
+    /**
+     * @brief Get KostalLog pointer of rotating_logger_mt
+     * @return KostalLog pointer
+     */
+    std::shared_ptr<spdlog::logger> getLogger();
 
     /**
      * @brief Print info message with timestamp and coloring
@@ -44,6 +59,18 @@ public:
      * @note Color = red
      */
     void error(const std::string& message) const;
+
+private:
+    KostalLog();
+    virtual ~KostalLog();
+    KostalLog(const KostalLog &) = delete;
+    KostalLog & operator=(const KostalLog &) = delete;
+    std::shared_ptr<spdlog::logger> m_loggerPtr;
+    std::string m_loggerName;
+    std::string m_loggerDir;
+    const int m_maxSize;
+    const int m_filesCount;
+
 };
 
 } /* namespace kostal */

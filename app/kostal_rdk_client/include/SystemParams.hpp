@@ -39,6 +39,9 @@
 #include <boost/asio/thread_pool.hpp>
 #include <jsoncpp/json/json.h>
 #include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/sinks/rotating_file_sink.h>
 #include <eigen3/Eigen/Eigen>
 
 // The port number of destination host
@@ -147,5 +150,11 @@ extern std::atomic<bool> g_collectSwitch;
 // Connection timeout interval after first handshake with Testman, unit is
 // second
 extern int64_t g_timeoutInterval;
+
+// logger setting
+extern std::string g_loggerName;
+extern std::string g_loggerDir;
+extern const int g_maxSize;
+extern const int g_filesCount;
 
 #endif /* FLEXIVRDK_SYSTEMPARAMS_HPP_ */

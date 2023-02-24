@@ -29,15 +29,15 @@ Status Communications::init(flexiv::Robot* robotPtr)
     result = m_robotHandler.buildRobotConnection(robotPtr, &f_log);
     if (result != SUCCESS) {
         // If failed at the first place, need to report and exit
-        k_log.error("The flexiv system failed to initialize the robot!");
-        k_log.error("Please recover the robot and then reboot it");
-        k_log.error("===================================================");
+        k_log->error("The flexiv system failed to initialize the robot!");
+        k_log->error("Please recover the robot and then reboot it");
+        k_log->error("===================================================");
         m_flexivStatus = FAULT;
         m_seriousErrorFlag = true;
         // m_parHandler.publishMsg(m_publisher, &pub_msg, g_redLight);
         m_parHandler.publishRobotMsg(m_publisher, &pub_msg, g_robotRedLight);
     } else {
-        f_log.info("The robot connection is built successfully");
+        k_log->info("The robot connection is built successfully");
         m_parHandler.publishRobotMsg(m_publisher, &pub_msg, g_robotGreenLight);
     }
 
@@ -45,7 +45,7 @@ Status Communications::init(flexiv::Robot* robotPtr)
     // testman's shakehand message
     result = m_service.init();
     if (result != SUCCESS) {
-        k_log.error(
+        k_log->error(
             "The flexiv system fails to initialize the socket server, "
             "please check your network");
         // if socket failed, directly return error code and break because
@@ -57,7 +57,7 @@ Status Communications::init(flexiv::Robot* robotPtr)
 
         return result;
     } else {
-        k_log.info("The socket connection is built successfully");
+        k_log->info("The socket connection is built successfully");
         m_parHandler.publishTestmanMsg(m_publisher, &pub_msg, g_testmanGreenLight);
     }
 
@@ -70,14 +70,14 @@ Status Communications::init(flexiv::Robot* robotPtr)
         m_seriousErrorFlag = true;
         m_parHandler.publishSpiMsg(m_publisher, &pub_msg, g_spiRedLight);
     } else {
-        k_log.info("The spi connection is built successfully");
+        k_log->info("The spi connection is built successfully");
         m_parHandler.publishSpiMsg(m_publisher, &pub_msg, g_spiGreenLight);
     }
 
     // 4th, if flexivStatus has been changed from INIT, but the socket server
     // is successfully initialized, return SYSTEM to indicate a hardware fault.
     if (m_flexivStatus != INIT) {
-        k_log.error(
+        k_log->error(
             "The flexiv system failed in initialization, please check "
             "ROBOT or SPI");
         m_flexivStatus = FAULT;
@@ -88,7 +88,7 @@ Status Communications::init(flexiv::Robot* robotPtr)
 
     // 5th, if flexivStatus still keeps at INIT, return success and switch
     // flexivStatus to IDLE
-    f_log.info("The flexiv system is initialized successfully");
+    k_log->info("The flexiv system is initialized successfully");
     m_flexivStatus = IDLE;
     m_parHandler.publishMsg(m_publisher, &pub_msg, g_greenLight);
 
@@ -105,10 +105,10 @@ Status Communications::executeCheck()
     // parse the json message to retrieve the value of queryStatus and
     // terminateStatus
     result = m_parserHandler.parseHBJSON(
-        &recvMsg, &m_queryStatus, &m_terminateStatus, &k_log);
+        &recvMsg, &m_queryStatus, &m_terminateStatus, k_log);
     if (result != SUCCESS) {
         m_flexivStatus = FAULT;
-        f_log.error("The task message is failed to be parsed");
+        k_log->error("The task message is failed to be parsed");
         // m_parHandler.publishMsg(m_publisher, &pub_msg, g_redLight);
         m_parHandler.publishTestmanMsg(m_publisher, &pub_msg, g_testmanRedLight);
 
@@ -149,11 +149,11 @@ Status Communications::executeTask(flexiv::Robot* robotPtr)
     // 2nd, parse the json message to retrieve the value of queryStatus,
     // taskType and taskName
     result = m_parserHandler.parseTaskJSON(
-        &recvMsg, &m_queryStatus, &m_taskType, &m_taskName, &k_log);
+        &recvMsg, &m_queryStatus, &m_taskType, &m_taskName, k_log);
     if (result != SUCCESS) {
         m_flexivStatus = FAULT;
-        f_log.error("The task message is failed to be parsed");
-        f_log.error("===================================================");
+        k_log->error("The task message is failed to be parsed");
+        k_log->error("===================================================");
         // m_parHandler.publishMsg(m_publisher, &pub_msg, g_redLight);
         m_parHandler.publishTestmanMsg(m_publisher, &pub_msg, g_testmanRedLight);
 
@@ -172,8 +172,8 @@ Status Communications::executeTask(flexiv::Robot* robotPtr)
         &m_robotData, &m_robotDataList, &f_log, m_taskName + "-" + m_taskType);
     if (result != SUCCESS) {
         m_flexivStatus = FAULT;
-        f_log.error("The sync task is failed to be executed");
-        f_log.error("===================================================");
+        k_log->error("The sync task is failed to be executed");
+        k_log->error("===================================================");
         // m_parHandler.publishMsg(m_publisher, &pub_msg, g_redLight);
 
         return result;
@@ -189,33 +189,33 @@ Status Communications::executeTask(flexiv::Robot* robotPtr)
         m_taskType, m_taskName, &m_robotDataList, &m_spiDataList, &f_log);
     if (result != SUCCESS) {
         m_flexivStatus = FAULT;
-        f_log.error("The excel file is failed to be generated");
-        f_log.error("===================================================");
+        k_log->error("The excel file is failed to be generated");
+        k_log->error("===================================================");
         // m_parHandler.publishMsg(m_publisher, &pub_msg, g_redLight);
 
         return result;
     }
 
     // 6th, after all these steps, mention that the task execution is finished
-    f_log.info("****************************************************");
-    f_log.info("The task is executed successfully");
-    f_log.info("****************************************************");
+    k_log->info("****************************************************");
+    k_log->info("The task is executed successfully");
+    k_log->info("****************************************************");
 
     // Very Important!!
     // 7th, try to reinit the spi device before next round, the spi device is
     // found to be blocked if we do not initialize it manually
-    k_log.info("Try to reinitialize the SPI device...");
+    k_log->info("Try to reinitialize the SPI device...");
     result = m_spiHandler.reinitSPI();
     if (result != SUCCESS) {
         m_flexivStatus = FAULT;
-        f_log.error("The SPI re-initialization is failed");
-        f_log.error("===================================================");
+        k_log->error("The SPI re-initialization is failed");
+        k_log->error("===================================================");
         // m_parHandler.publishMsg(m_publisher, &pub_msg, g_redLight);
         m_parHandler.publishSpiMsg(m_publisher, &pub_msg, g_spiRedLight);
 
         return result;
     } else {
-        k_log.info("The SPI device is reinitialized successfully");
+        k_log->info("The SPI device is reinitialized successfully");
     }
 
     // 8th, after the reinit of the spi device, switch flexivStatus to IDLE
@@ -240,7 +240,7 @@ void Communications::stateMachine(flexiv::Robot* robotPtr)
                 if (result != SUCCESS) {
                     m_flexivStatus = FAULT;
                     m_seriousErrorFlag = true;
-                    k_log.error("Please recover the robot and then reboot it");
+                    k_log->error("Please recover the robot and then reboot it");
                     // m_parHandler.publishMsg(m_publisher, &pub_msg, g_redLight);
                     m_parHandler.publishRobotMsg(m_publisher, &pub_msg, g_robotRedLight);
                     return;
@@ -255,7 +255,7 @@ void Communications::stateMachine(flexiv::Robot* robotPtr)
                 while (m_checkStatusFlag == true) {
 
                     // This will be print all over the heartbeat
-                    k_log.info(
+                    k_log->info(
                         "The flexiv system is in idle mode, listening...");
 
                     // set reply msg to "IDLE" and keep answering
@@ -263,10 +263,10 @@ void Communications::stateMachine(flexiv::Robot* robotPtr)
                     result = m_service.monitor();
                     if (result != SUCCESS) {
                         m_flexivStatus = FAULT;
-                        k_log.error(
+                        k_log->error(
                             "The flexiv system is having an error in "
                             "heartbeat");
-                        k_log.error(
+                        k_log->error(
                             "=============================================="
                             "=====");
                         // m_parHandler.publishMsg(
@@ -281,7 +281,7 @@ void Communications::stateMachine(flexiv::Robot* robotPtr)
                     result = executeCheck();
                     if (result != SUCCESS) {
                         m_flexivStatus = FAULT;
-                        k_log.error(
+                        k_log->error(
                             "The flexiv system is having an error in "
                             "querying server status");
                         // m_parHandler.publishMsg(
@@ -301,7 +301,7 @@ void Communications::stateMachine(flexiv::Robot* robotPtr)
                 if (m_terminateSwitch == false) {
                     // set status to BUSY and put the task into a thread
                     // pool
-                    k_log.info("The flexiv system received a task!");
+                    k_log->info("The flexiv system received a task!");
                     m_flexivStatus = BUSY;
                     boost::asio::post(
                         t_pool, boost::bind(&Communications::executeTask, this,
@@ -311,7 +311,7 @@ void Communications::stateMachine(flexiv::Robot* robotPtr)
                 } else {
                     // client is sending a terminate signal, so go to
                     // switch-case DONE directly
-                    k_log.info(
+                    k_log->info(
                         "The flexiv system received a terminate signal!");
                     m_parHandler.publishTestmanMsg(m_publisher, &pub_msg, g_testmanGreyLight);
                     m_parHandler.publishRobotMsg(m_publisher, &pub_msg, g_robotGreyLight);
@@ -331,10 +331,10 @@ void Communications::stateMachine(flexiv::Robot* robotPtr)
                 // listen and reply busy to testman
                 result = m_service.monitor();
                 if (result != SUCCESS) {
-                    k_log.error(
+                    k_log->error(
                         "The flexiv system is having an error in "
                         "connection, wait for task to be finished...");
-                    k_log.error(
+                    k_log->error(
                         "=================================================="
                         "=");
                     // if socket fails, wait for current task to finish and
@@ -349,14 +349,14 @@ void Communications::stateMachine(flexiv::Robot* robotPtr)
             }
 
             case DONE: {
-                k_log.info(
+                k_log->info(
                     "===================================================");
-                k_log.info("The flexiv system is turning off...");
-                k_log.info(
+                k_log->info("The flexiv system is turning off...");
+                k_log->info(
                     "===================================================");
                 // just close the socket service
                 m_service.disconnect();
-                k_log.info(
+                k_log->info(
                     "Flexiv system server closed this connection safely");
                 return;
             }
@@ -365,16 +365,16 @@ void Communications::stateMachine(flexiv::Robot* robotPtr)
             // return
             case FAULT: {
                 m_service.setReplyMsg("FAULT");
-                k_log.error("The flexiv system is in fault mode...");
-                k_log.error(
+                k_log->error("The flexiv system is in fault mode...");
+                k_log->error(
                     "===================================================");
                 // set reply content to "FAULT" and reply to client
                 result = m_service.monitor();
                 if (result != SUCCESS) {
-                    k_log.error(
+                    k_log->error(
                         "The flexiv system is having an error in "
                         "fault status");
-                    k_log.error(
+                    k_log->error(
                         "=================================================="
                         "=");
                     m_flexivStatus = FAULT;
@@ -386,7 +386,7 @@ void Communications::stateMachine(flexiv::Robot* robotPtr)
                     return;
                 }
                 m_service.disconnect();
-                k_log.error(
+                k_log->error(
                     "Flexiv system server closed this connection due to "
                     "fault");
                 return;

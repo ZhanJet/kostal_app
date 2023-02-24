@@ -41,12 +41,12 @@ Status WriteExcel::writeDataToExcel(std::string taskType, std::string taskName,
     flexiv::Log* logPtr)
 {
     if (spiDataListPtr->size() == 0) {
-        logPtr->error("The collected spi data list is null, exiting...");
+        k_log->error("The collected spi data list is null, exiting...");
         return CSV;
     }
 
     if (robotDataListPtr->size() == 0) {
-        logPtr->error("The collected robot data list is null, exiting...");
+        k_log->error("The collected robot data list is null, exiting...");
         return CSV;
     }
 
@@ -56,7 +56,7 @@ Status WriteExcel::writeDataToExcel(std::string taskType, std::string taskName,
     std::cout << "The generated file path is: " << excelFileName << std::endl;
     excelFile.open(excelFileName, std::ios::out);
     if (!excelFile.is_open()) {
-        logPtr->error("The associated excel file is not created correctly");
+        k_log->error("The associated excel file is not created correctly");
         return CSV;
     }
 
@@ -246,16 +246,16 @@ Status WriteExcel::divideData(std::list<RobotData>* robotDataListPtr,
     std::list<SPIData>* rightSPIDataListPtr, flexiv::Log* logPtr)
 {
     if (spiDataListPtr->size() == 0) {
-        logPtr->error("The collected spi data list is null, exiting...");
+        k_log->error("The collected spi data list is null, exiting...");
         return CSV;
     }
 
     if (robotDataListPtr->size() == 0) {
-        logPtr->error("The collected robot data list is null, exiting...");
+        k_log->error("The collected robot data list is null, exiting...");
         return CSV;
     }
     if (spiDataListPtr->size() != robotDataListPtr->size()) {
-        logPtr->error(
+        k_log->error(
             "The size of collected robot data and spi data is not same, "
             "exiting...");
         return CSV;
@@ -279,7 +279,7 @@ Status WriteExcel::divideData(std::list<RobotData>* robotDataListPtr,
         robotDataListPtr->pop_front();
         spiDataListPtr->pop_front();
     }
-    logPtr->info("The left and right data has been divided successfully!");
+    k_log->info("The left and right data has been divided successfully!");
     return SUCCESS;
 }
 
@@ -295,7 +295,7 @@ Status WriteExcel::writeLeverDataToExcel(std::string taskType,
     std::cout << "The generated file path is: " << excelFileName << std::endl;
     excelFile.open(excelFileName, std::ios::out);
     if (!excelFile.is_open()) {
-        logPtr->error("The associated " + leverSide + " excel file is not created correctly");
+        k_log->error("The associated " + leverSide + " excel file is not created correctly");
         return CSV;
     }
 
@@ -447,31 +447,31 @@ Status WriteExcel::writeTwoExcel(std::string taskType, std::string taskName,
     result = divideData(robotDataListPtr, spiDataListPtr, leftRobotDataListPtr,
         leftSPIDataListPtr, rightRobotDataListPtr, rightSPIDataListPtr, logPtr);
     if (result != SUCCESS) {
-        logPtr->error("The excel writing of spi and robot data is failed");
+        k_log->error("The excel writing of spi and robot data is failed");
         return result;
     }
     // Check size is equal and not equal to 0
     if (leftSPIDataListPtr->size() == 0 || rightSPIDataListPtr->size() == 0) {
-        logPtr->error(
+        k_log->error(
             "The collected left or right spi data list is null, "
             "exiting...");
         return CSV;
     }
     if (leftRobotDataListPtr->size() == 0
         || rightRobotDataListPtr->size() == 0) {
-        logPtr->error(
+        k_log->error(
             "The collected left or right robot data list is null, "
             "exiting...");
         return CSV;
     }
     if (leftSPIDataListPtr->size() != leftRobotDataListPtr->size()) {
-        logPtr->error(
+        k_log->error(
             "The size of collected left robot data and spi data is not "
             "same, exiting...");
         return CSV;
     }
     if (rightSPIDataListPtr->size() != rightRobotDataListPtr->size()) {
-        logPtr->error(
+        k_log->error(
             "The size of collected right robot data and spi data is not "
             "same, exiting...");
         return CSV;
@@ -481,7 +481,7 @@ Status WriteExcel::writeTwoExcel(std::string taskType, std::string taskName,
     result = writeLeverDataToExcel(taskType, taskName, leverSide,
         leftRobotDataListPtr, rightSPIDataListPtr, logPtr);
     if (result != SUCCESS) {
-        logPtr->error("The writing of left lever data to excel is failed");
+        k_log->error("The writing of left lever data to excel is failed");
         return result;
     }
 
@@ -490,11 +490,11 @@ Status WriteExcel::writeTwoExcel(std::string taskType, std::string taskName,
     result = writeLeverDataToExcel(taskType, taskName, leverSide,
         leftRobotDataListPtr, rightSPIDataListPtr, logPtr);
     if (result != SUCCESS) {
-        logPtr->error("The writing of right lever data to excel is failed");
+        k_log->error("The writing of right lever data to excel is failed");
         return result;
     }
 
-    logPtr->info(
+    k_log->info(
         "Both of left and right lever excel files are generated "
         "successfully");
     return SUCCESS;

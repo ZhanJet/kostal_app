@@ -6,6 +6,7 @@
 #define FLEXIVRDK_WRITEEXCEL_HPP_
 
 #include "KostalStates.hpp"
+#include "KostalLog.hpp"
 
 namespace kostal {
 
