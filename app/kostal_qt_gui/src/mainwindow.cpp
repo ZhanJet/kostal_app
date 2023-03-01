@@ -6,6 +6,7 @@
 #include <QDateTime>
 #include <QDir>
 #include <QDebug>
+#include <QThread>
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 
@@ -28,7 +29,7 @@ MainWindow::MainWindow(QWidget* parent)
     // set up ui first
     ui->setupUi(this);
 
-    m_process = new QProcess;
+    m_process = new QProcess(this);
     m_process->start("/home/kostal/Programs/Kostal/flexiv_app_guis/build/app/kostal_rdk_client/kostal_rdk_client");
     m_process->waitForStarted();
 
@@ -176,9 +177,13 @@ void MainWindow::updateTestmanData(const kostal_gui_msgs::msg::KostalLever *subs
 
 void MainWindow::on_actionRestart_Robot_triggered()
 {
-    m_process = new QProcess;
-    m_process->start("kill -9 $(pgrep -f rdk)");
-    m_process->waitForStarted();
-    m_process->start("/home/kostal/Programs/Kostal/flexiv_app_guis/build/app/kostal_rdk_client/kostal_rdk_client");
-    m_process->waitForStarted();
+    QProcess *killProcess = new QProcess(this);
+    killProcess->start("sh /home/kostal/Programs/Kostal/flexiv_app_guis/app/kostal_qt_gui/kill_rdk.sh");
+    killProcess->waitForStarted();
+
+    QThread::msleep(1500);
+
+    QProcess *runProcess = new QProcess(this);
+    runProcess->start("sh /home/kostal/Programs/Kostal/flexiv_app_guis/app/kostal_qt_gui/run_rdk.sh");
+    runProcess->waitForStarted();
 }
