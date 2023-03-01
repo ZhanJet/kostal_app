@@ -136,68 +136,47 @@ Status WriteExcel::writeDataToExcel(std::string taskType, std::string taskName,
               << "timestamp"
               << std::endl;
 
-    std::list<RobotData>::iterator i_robotData = robotDataListPtr->begin();
-    std::list<SPIData>::iterator i_spiData = spiDataListPtr->begin();
-    int64_t spiTimestamp = 0;
+    std::list<SPIData>::iterator spiIterator = spiDataListPtr->begin();
+    std::list<RobotData>::iterator robotIterator = robotDataListPtr->begin();
 
-    std::list<SPIData>::iterator i_spiDataTemp = spiDataListPtr->begin();
-    while (i_spiDataTemp != spiDataListPtr->end())
+    firstTimestamp = (*spiIterator).timestamp;
+
+    for(int index = 0; spiIterator != spiDataListPtr->end(); spiIterator++)
     {
-        if((*i_spiDataTemp).timestamp > (*i_robotData).timestamp)
-        {
-            spiTimestamp = (*i_spiDataTemp).timestamp;
-            firstTimestamp = spiTimestamp;
-            break;
-        }
-        else
-        {
-            i_spiData = i_spiDataTemp;
-            i_spiDataTemp++;
-        }
-    }
-    int64_t nextSpiTimestamp = (*i_spiDataTemp).timestamp;
-
-    int index = 0;
-
-    for(; i_robotData != robotDataListPtr->end(); i_robotData++)
-    {
-        int64_t robotTimestamp = (*i_robotData).timestamp;
-
-        std::list<SPIData>::iterator i_spiDataNext = i_spiData;
-        i_spiDataNext++;
-
-        if(i_spiDataNext != spiDataListPtr->end())
-        {
-            if(nextSpiTimestamp > robotTimestamp)
-            {
-                write2Excel(excelFile, index, i_robotData, i_spiData);
-            }
-            else
-            {
-                write2Excel(excelFile, index, i_robotData, i_spiDataNext);
-
-                i_spiData++;
-                spiTimestamp = (*i_spiData).timestamp;
-
-                i_spiDataTemp = i_spiData;
-                i_spiDataTemp++;
-
-                if(i_spiDataTemp != spiDataListPtr->end())
-                {
-                    nextSpiTimestamp = (*i_spiDataTemp).timestamp;
-                }
-            }
-        }
-        else
-        {
-            write2Excel(excelFile, index, i_robotData, i_spiData);
-        }
-
+        robotIterator = findRobotIterator(robotIterator, spiIterator, robotDataListPtr, spiDataListPtr);
+        write2Excel(excelFile, index, robotIterator, spiIterator);
         index++;
     }
 
     excelFile.close();
     return SUCCESS;
+}
+
+std::list<RobotData>::iterator WriteExcel::findRobotIterator(std::list<RobotData>::iterator robotIterator, std::list<SPIData>::iterator spiIterator, std::list<RobotData>* robotDataListPtr, std::list<SPIData>* spiDataListPtr)
+{
+    std::list<RobotData>::iterator nextRobotIterator = robotIterator;
+    while((*nextRobotIterator).timestamp < (*spiIterator).timestamp)
+    {
+        if(std::next(nextRobotIterator) == robotDataListPtr->end() || nextRobotIterator == robotDataListPtr->end())
+        {
+            break;
+        }
+        else
+        {
+            nextRobotIterator++;
+        }
+    }
+    std::list<RobotData>::iterator lastRobotIterator = std::prev(nextRobotIterator);
+    int64_t lastValue = (*spiIterator).timestamp - (*lastRobotIterator).timestamp;
+    int64_t nextValue = (*nextRobotIterator).timestamp - (*spiIterator).timestamp;
+    if(lastValue < nextValue)
+    {
+        return lastRobotIterator;
+    }
+    else
+    {
+        return nextRobotIterator;
+    }
 }
 
 void WriteExcel::write2Excel(std::fstream &excelFile, int index, std::list<RobotData>::iterator i_robotData, std::list<SPIData>::iterator i_spiData)
@@ -245,7 +224,7 @@ void WriteExcel::write2Excel(std::fstream &excelFile, int index, std::list<Robot
         excelFile << +static_cast<uint8_t>((*i_spiData).SPISensor[j]) << ",";
     }
 
-    excelFile << std::to_string((*i_robotData).timestamp - firstTimestamp);
+    excelFile << std::to_string((*i_spiData).timestamp) << ", " << std::to_string((*i_robotData).timestamp);
 
     excelFile << std::endl;
 }

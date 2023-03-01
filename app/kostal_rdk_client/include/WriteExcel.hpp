@@ -92,6 +92,7 @@ public:
     void write2Excel(std::fstream &excelFile, int index, std::list<RobotData>::iterator i_robotData, std::list<SPIData>::iterator i_spiData);
 
     int64_t firstTimestamp{0};
+    std::list<RobotData>::iterator findRobotIterator(std::list<RobotData>::iterator robotIterator, std::list<SPIData>::iterator spiIterator, std::list<RobotData> *robotDataListPtr, std::list<SPIData> *spiDataListPtr);
 };
 
 } /* namespace kostal */

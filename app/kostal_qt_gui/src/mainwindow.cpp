@@ -179,6 +179,6 @@ void MainWindow::on_actionRestart_Robot_triggered()
     m_process = new QProcess;
     m_process->start("kill -9 $(pgrep -f rdk)");
     m_process->waitForStarted();
-//    m_process->start("/home/kostal/Programs/Kostal/flexiv_app_guis/build/app/kostal_rdk_client/kostal_rdk_client");
-//    m_process->waitForStarted();
+    m_process->start("/home/kostal/Programs/Kostal/flexiv_app_guis/build/app/kostal_rdk_client/kostal_rdk_client");
+    m_process->waitForStarted();
 }
