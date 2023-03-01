@@ -28,6 +28,10 @@ MainWindow::MainWindow(QWidget* parent)
     // set up ui first
     ui->setupUi(this);
 
+    m_process = new QProcess;
+    m_process->start("/home/kostal/Programs/Kostal/flexiv_app_guis/build/app/kostal_rdk_client/kostal_rdk_client");
+    m_process->waitForStarted();
+
     // init gui
     initGUI();
 
@@ -168,4 +172,13 @@ void MainWindow::updateTestmanData(const kostal_gui_msgs::msg::KostalLever *subs
     }
 
     ui->testman_status->update();
+}
+
+void MainWindow::on_actionRestart_Robot_triggered()
+{
+    m_process = new QProcess;
+    m_process->start("kill -9 $(pgrep -f rdk)");
+    m_process->waitForStarted();
+//    m_process->start("/home/kostal/Programs/Kostal/flexiv_app_guis/build/app/kostal_rdk_client/kostal_rdk_client");
+//    m_process->waitForStarted();
 }

@@ -990,6 +990,28 @@ border-radius: 5px;</string>
     </item>
    </layout>
   </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>670</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuRestart_Robot">
+    <property name="title">
+     <string>Restart</string>
+    </property>
+    <addaction name="actionRestart_Robot"/>
+   </widget>
+   <addaction name="menuRestart_Robot"/>
+  </widget>
+  <action name="actionRestart_Robot">
+   <property name="text">
+    <string>Restart Robot</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

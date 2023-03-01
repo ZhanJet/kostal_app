@@ -136,18 +136,30 @@ Status WriteExcel::writeDataToExcel(std::string taskType, std::string taskName,
               << "timestamp"
               << std::endl;
 
-    std::list<RobotData>::iterator i_robotData;
+    std::list<RobotData>::iterator i_robotData = robotDataListPtr->begin();
     std::list<SPIData>::iterator i_spiData = spiDataListPtr->begin();
+    int64_t spiTimestamp = 0;
 
-    firstTimestamp = (*i_spiData).timestamp;
-
-    int64_t spiTimestamp = (*i_spiData).timestamp;
-    std::list<SPIData>::iterator i_spiDataSecond = std::next(i_spiData, 1);
-    int64_t nextSpiTimestamp = (*i_spiDataSecond).timestamp;
+    std::list<SPIData>::iterator i_spiDataTemp = spiDataListPtr->begin();
+    while (i_spiDataTemp != spiDataListPtr->end())
+    {
+        if((*i_spiDataTemp).timestamp > (*i_robotData).timestamp)
+        {
+            spiTimestamp = (*i_spiDataTemp).timestamp;
+            firstTimestamp = spiTimestamp;
+            break;
+        }
+        else
+        {
+            i_spiData = i_spiDataTemp;
+            i_spiDataTemp++;
+        }
+    }
+    int64_t nextSpiTimestamp = (*i_spiDataTemp).timestamp;
 
     int index = 0;
 
-    for(i_robotData = robotDataListPtr->begin(); i_robotData != robotDataListPtr->end(); i_robotData++)
+    for(; i_robotData != robotDataListPtr->end(); i_robotData++)
     {
         int64_t robotTimestamp = (*i_robotData).timestamp;
 
@@ -156,24 +168,24 @@ Status WriteExcel::writeDataToExcel(std::string taskType, std::string taskName,
 
         if(i_spiDataNext != spiDataListPtr->end())
         {
-            if(nextSpiTimestamp < robotTimestamp)
+            if(nextSpiTimestamp > robotTimestamp)
+            {
+                write2Excel(excelFile, index, i_robotData, i_spiData);
+            }
+            else
             {
                 write2Excel(excelFile, index, i_robotData, i_spiDataNext);
 
                 i_spiData++;
                 spiTimestamp = (*i_spiData).timestamp;
 
-                std::list<SPIData>::iterator i_spiDataNext2 = i_spiData;
-                i_spiDataNext2++;
+                i_spiDataTemp = i_spiData;
+                i_spiDataTemp++;
 
-                if(i_spiDataNext2 != spiDataListPtr->end())
+                if(i_spiDataTemp != spiDataListPtr->end())
                 {
-                    nextSpiTimestamp = (*i_spiDataNext2).timestamp;
+                    nextSpiTimestamp = (*i_spiDataTemp).timestamp;
                 }
-            }
-            else
-            {
-                write2Excel(excelFile, index, i_robotData, i_spiData);
             }
         }
         else

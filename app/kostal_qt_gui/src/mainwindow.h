@@ -4,6 +4,7 @@
 // QT headers
 #include <QMainWindow>
 #include <QFile>
+#include <QProcess>
 
 // Pub-Sub associated headers
 #include <flexiv/middleware2/fast_rtps_node.h>
@@ -39,6 +40,9 @@ public:
     MainWindow(QWidget* parent = nullptr);
     ~MainWindow();
 
+private slots:
+    void on_actionRestart_Robot_triggered();
+
 private:
     /**
      * @brief init GUI
@@ -73,6 +77,7 @@ private:
 private:
     /** Ui*/
     Ui::MainWindow* ui;
+    QProcess *m_process;
 
     /** Subscribe Node*/
     flexiv::middleware2::FastRTPSNode m_subNode;

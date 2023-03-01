@@ -31,8 +31,8 @@ Status SyncTask::runScheduler(flexiv::Robot* robotPtr, SPIData* spiDataPtr,
     auto spiWorker = std::bind(&kostal::SPIOperations::collectSPIData, m_spiHandler, spiDataPtr, spiDataListPtr, logPtr);
     auto robotWorker = std::bind(&kostal::RobotOperations::collectSyncData, m_robotHandler, robotPtr, robotDataPtr, robotDataListPtr);
 
-    std::thread spiThread(spiWorker);
     std::thread robotThread(robotWorker);
+    std::thread spiThread(spiWorker);
 
     // Wait until the program is finished
     while (robotPtr->isBusy()) {
@@ -42,8 +42,9 @@ Status SyncTask::runScheduler(flexiv::Robot* robotPtr, SPIData* spiDataPtr,
     g_collectSwitch = false;
 
     // Wait for threads till the end
-    spiThread.join();
     robotThread.join();
+    spiThread.join();
+    
     k_log->info("The sync task is finished by scheduler");
 
     return SUCCESS;
