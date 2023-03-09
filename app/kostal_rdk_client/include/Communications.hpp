@@ -82,9 +82,6 @@ private:
     // thread pool to hold concurrent threads
     boost::asio::thread_pool t_pool;
 
-    // kostal log instance
-    // kostal::KostalLog k_log;
-
     // json message handler instance
     kostal::JsonParser m_parserHandler;
 

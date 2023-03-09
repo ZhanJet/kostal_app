@@ -7,7 +7,6 @@
 #define FLEXIVRDK_JSON_PARSER_HPP_
 
 #include "KostalLog.hpp"
-#include "KostalLog.hpp"
 
 namespace kostal {
 

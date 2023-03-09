@@ -8,9 +8,6 @@
 
 #include "SystemParams.hpp"
 
-#if defined (k_log) 
-#undef k_log
-#endif
 #define k_log (kostal::KostalLog::getInstance())
 
 namespace kostal {

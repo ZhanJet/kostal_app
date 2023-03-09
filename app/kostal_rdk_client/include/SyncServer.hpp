@@ -24,8 +24,6 @@ protected:
     std::unique_ptr<acc> m_acceptorPtr;
 
 private:
-    // create kostal log object
-    // kostal::KostalLog k_log;
 
     // create a json parser
     kostal::JsonParser m_parserHandler;

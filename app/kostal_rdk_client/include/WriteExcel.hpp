@@ -35,64 +35,27 @@ public:
         std::list<SPIData>* spiDataListPtr, flexiv::Log* logPtr);
 
     /**
-     * @brief Divide the global spi data list and robot data list into two
-     * desired data list without some useless node data
+     * @brief According to spi timestamp,find the closest robot timestamp
+     * @param[in] robotIterator iterator of RobotData list
+     * @param[in] spiIterator iterator of SPIData list
      * @param[in] robotDataListPtr robot data list's pointer
      * @param[in] spiDataListPtr spi data list's pointer
-     * @param[in] leftRobotDataListPtr left robot data list's pointer
-     * @param[in] leftSPIDataListPtr left spi data list's pointer
-     * @param[in] rightRobotDataListPtr right robot data list's pointer
-     * @param[in] rightSPIDataListPtr right spi data list's pointer
-     * @param[in] logPtr robot's log pointer
-     * @return Status code
+     * @return iterator of RobotData list
      */
-    Status divideData(std::list<RobotData>* robotDataListPtr,
-        std::list<SPIData>* spiDataListPtr,
-        std::list<RobotData>* leftRobotDataListPtr,
-        std::list<SPIData>* leftSPIDataListPtr,
-        std::list<RobotData>* rightRobotDataListPtr,
-        std::list<SPIData>* rightSPIDataListPtr, flexiv::Log* logPtr);
+    std::list<RobotData>::iterator findRobotIterator(std::list<RobotData>::iterator robotIterator,
+        std::list<SPIData>::iterator spiIterator, std::list<RobotData> *robotDataListPtr, std::list<SPIData> *spiDataListPtr);
 
     /**
-     * @brief Write spi data list and robot data list into csv file with given
-     * lever side: Left or Right
-     * @param[in] taskType the type of the task, can be NORMAL, BIAS, DUMMY
-     * @param[in] taskName the name of the task
-     * @param[in] leverSide the side of the lever to be written to excel
-     * @param[in] leverRobotDataListPtr one lever's robot data list pointer
-     * @param[in] leverSPIDataListPtr one lever's spi data list pointer
-     * @param[in] logPtr robot's log pointer
-     * @return Status code
+     * @brief Write the global spi data list and robot data after synchronized.
+     * @param[in] excelFile the csv type file to record robot and spi data 
+     * @param[in] index the index of SPIData
+     * @param[in] i_robotData robot data list's pointer
+     * @param[in] i_spiData spi data list's pointer
      */
-    Status writeLeverDataToExcel(std::string taskType, std::string taskName,
-        std::string leverSide, std::list<RobotData>* leverRobotDataListPtr,
-        std::list<SPIData>* leverSPIDataListPtr, flexiv::Log* logPtr);
-
-    /**
-     * @brief Write the global spi data list and robot data list into two csv
-     * files with left and right
-     * @param[in] taskType the type of the task, can be NORMAL, BIAS, DUMMY
-     * @param[in] taskName the name of the task
-     * @param[in] robotDataListPtr robot data list's pointer
-     * @param[in] spiDataListPtr spi data list's pointer
-     * @param[in] leftRobotDataListPtr left robot data list's pointer
-     * @param[in] leftSPIDataListPtr left spi data list's pointer
-     * @param[in] rightRobotDataListPtr right robot data list's pointer
-     * @param[in] rightSPIDataListPtr right spi data list's pointer
-     * @param[in] logPtr robot's log pointer
-     * @return Status code
-     */
-    Status writeTwoExcel(std::string taskType, std::string taskName,
-        std::list<RobotData>* robotDataListPtr,
-        std::list<SPIData>* spiDataListPtr,
-        std::list<RobotData>* leftRobotDataListPtr,
-        std::list<SPIData>* leftSPIDataListPtr,
-        std::list<RobotData>* rightRobotDataListPtr,
-                         std::list<SPIData>* rightSPIDataListPtr, flexiv::Log* logPtr);
     void write2Excel(std::fstream &excelFile, int index, std::list<RobotData>::iterator i_robotData, std::list<SPIData>::iterator i_spiData);
 
+public:
     int64_t firstTimestamp{0};
-    std::list<RobotData>::iterator findRobotIterator(std::list<RobotData>::iterator robotIterator, std::list<SPIData>::iterator spiIterator, std::list<RobotData> *robotDataListPtr, std::list<SPIData> *spiDataListPtr);
 };
 
 } /* namespace kostal */

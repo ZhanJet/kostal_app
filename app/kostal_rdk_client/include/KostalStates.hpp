@@ -60,11 +60,16 @@ public:
     }
 
     // overload operator functions
-//    SPIData& operator=(uint8_t* buffer)
-//    {
-//        memcpy(SPISensor, buffer, sizeof(uint8_t) * 16);
-//        return *this;
-//    }
+   SPIData& operator=(const SPIData& s)
+   {
+        if (this == &s)
+            return *this;
+        for (int i = 0; i < 16; i++) {
+            SPISensor[i] = s.SPISensor[i];
+        }
+        timestamp = s.timestamp;
+        return *this;
+   }
 
     // clear SPISensor[16]
     void clearSensor() { SPISensor[16] = {0}; timestamp = 0;}
