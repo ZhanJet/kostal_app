@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
         boost::asio::io_context io_context;
         tcp::socket s1(io_context);
         tcp::resolver resolver(io_context);
-        boost::asio::connect(s1, resolver.resolve("127.0.0.1", "6070"));
+        boost::asio::connect(s1, resolver.resolve("192.168.2.101", "6070"));
 
         // Write
         std::string stringtemp = "";
@@ -55,8 +55,8 @@ int main(int argc, char* argv[])
         Json::Value config2;
         config2["TM_FLEXIV_QUERY_STATUS"] = "true";
         config2["TM_FLEXIV_TERMINATE"] = "false";
-        config2["TM_FLEXIV_TASK_TYPE"] = "NORMAL";
-        config2["TM_FLEXIV_TASK_NAME"] = "Kostal-MainPlan";
+        config2["TM_FLEXIV_TASK_TYPE"] = "NORMAL-MainPlan";
+        config2["TM_FLEXIV_TASK_NAME"] = "Kostal-XXXX";
         stringtemp = Json::FastWriter().write(config2);
         request = stringtemp.c_str();
         int i = 3;

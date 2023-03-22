@@ -40,6 +40,7 @@ Status Communications::init(flexiv::Robot* robotPtr)
         k_log->info("The robot connection is built successfully");
         m_parHandler.publishRobotMsg(m_publisher, &pub_msg, g_robotGreenLight);
     }
+    k_log->info("Conect with testman...");
 
     // 2nd, try to initialize the socket server and get spi config from
     // testman's shakehand message

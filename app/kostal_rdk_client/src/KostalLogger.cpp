@@ -23,7 +23,7 @@ KostalLog::KostalLog():m_maxSize(g_maxSize),m_filesCount(g_filesCount),m_loggerN
 {
     m_loggerDir = g_loggerDir + "kostalLog" + getTime();
     m_loggerPtr = spdlog::rotating_logger_mt(m_loggerName, m_loggerDir, m_maxSize, m_filesCount);
-    spdlog::flush_every(std::chrono::seconds(3));
+    spdlog::flush_every(std::chrono::seconds(1));
 }
 
 KostalLog::~KostalLog()
