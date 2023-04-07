@@ -145,12 +145,12 @@ Status SPIOperations::collectSPIData(SPIData* spiDataPtr, std::list<SPIData>* sp
                     spiDataPtr->SPISensor[i] = read_buffer[i];
                 }
                 spiDataPtr->timestamp = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-                // std::cout << "spi collect data: " << std::endl;
-                // for (int i = 0; i < read_data_num; i++) {
-                //     std::cout  << std::hex << read_buffer[i];
-                // }
-                // std::cout << std::endl;
-                // spiDataListPtr->push_back(*spiDataPtr);
+                std::cout << "spi collect data: " << std::endl;
+                for (int i = 0; i < read_data_num; i++) {
+                    printf("02X",read_buffer[i]);
+                }
+                std::cout << std::endl;
+                spiDataListPtr->push_back(*spiDataPtr);
             }
             
             usleep(200);
@@ -161,3 +161,4 @@ Status SPIOperations::collectSPIData(SPIData* spiDataPtr, std::list<SPIData>* sp
 }
 
 } /* namespace kostal */
+0
