@@ -16,7 +16,7 @@ const int g_MSGMAXSIZE = 1024;
 
 const std::string g_TOKEN = "kostal";
 
-const std::string UPLOADADDRESS = "/home/kostal/";
+const std::string UPLOADADDRESS = "/home/ftp/";
 
 std::mutex g_kostalDataMutex;
 
