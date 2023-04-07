@@ -45,6 +45,10 @@ Status RobotOperations::buildRobotConnection(
         return ROBOT;
     }
 
+    // Enable the robot, make sure the E-stop is released before enabling
+    k_log->info("Enabling robot ...");
+    robotPtr->enable();
+
     // Wait for the robot to become operational
     while (!robotPtr->isOperational()) {
         std::this_thread::sleep_for(std::chrono::milliseconds(1));

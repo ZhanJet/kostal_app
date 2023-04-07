@@ -8,9 +8,9 @@
 
 const unsigned short g_COMMPORT = 6070;
 
-std::string ROBOTADDRESS = "192.168.2.100";
+std::string ROBOTADDRESS = "192.168.10.10";
 
-std::string LOCALADDRESS = "192.168.2.101";
+std::string LOCALADDRESS = "192.168.10.11";
 
 const int g_MSGMAXSIZE = 1024;
 

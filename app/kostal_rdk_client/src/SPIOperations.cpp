@@ -144,11 +144,16 @@ Status SPIOperations::collectSPIData(SPIData* spiDataPtr, std::list<SPIData>* sp
                 for (int i = 0; i < read_data_num; i++) {
                     spiDataPtr->SPISensor[i] = read_buffer[i];
                 }
-                spiDataPtr->timestamp = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();;
-                spiDataListPtr->push_back(*spiDataPtr);
+                spiDataPtr->timestamp = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+                // std::cout << "spi collect data: " << std::endl;
+                // for (int i = 0; i < read_data_num; i++) {
+                //     std::cout  << std::hex << read_buffer[i];
+                // }
+                // std::cout << std::endl;
+                // spiDataListPtr->push_back(*spiDataPtr);
             }
             
-            usleep(500);
+            usleep(200);
         }
     }
     std::cout << "spi collect finish!" << std::endl;

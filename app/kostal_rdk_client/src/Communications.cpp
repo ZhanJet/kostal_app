@@ -170,7 +170,7 @@ Status Communications::executeTask(flexiv::Robot* robotPtr)
     // 4th, run a sync task to execution the workplan and collect the robot data
     // at the same time
     result = m_stHandler.runScheduler(robotPtr, &m_spiData, &m_spiDataList,
-        &m_robotData, &m_robotDataList, &f_log, m_taskName + "-" + m_taskType);
+        &m_robotData, &m_robotDataList, &f_log, m_taskName + "-" + m_taskType + "-MainPlan");
     if (result != SUCCESS) {
         m_flexivStatus = FAULT;
         k_log->error("The sync task is failed to be executed");
