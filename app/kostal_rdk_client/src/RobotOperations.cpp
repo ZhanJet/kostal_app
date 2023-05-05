@@ -118,7 +118,7 @@ Status RobotOperations::collectSyncData(flexiv::Robot* robotPtr,
                 // get robot states and input them to robot data instance
                 robotPtr->getRobotStates(robotStates);
                 robotDataPtr->tcpPose = robotStates.tcpPose;
-                robotDataPtr->rawDataForceSensor = robotStates.extWrenchInTcp;
+                robotDataPtr->rawDataForceSensor = robotStates.ftSensorRaw;
                 robotDataPtr->flangePose = robotStates.flangePose;
                 robotDataPtr->timestamp = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 

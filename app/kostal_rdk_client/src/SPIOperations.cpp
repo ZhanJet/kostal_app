@@ -150,7 +150,7 @@ Status SPIOperations::collectSPIData(SPIData* spiDataPtr, std::list<SPIData>* sp
                     printf("02X",read_buffer[i]);
                 }
                 std::cout << std::endl;
-                spiDataListPtr->push_back(*spiDataPtr);
+                spiDataListPtr->push_back(*spiDataPtr); 
             }
             
             usleep(200);
@@ -161,4 +161,3 @@ Status SPIOperations::collectSPIData(SPIData* spiDataPtr, std::list<SPIData>* sp
 }
 
 } /* namespace kostal */
-0
