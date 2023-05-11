@@ -38,6 +38,8 @@ const std::string SELP = "SELP";
 
 const std::string TOKEN = "TOKEN";
 
+bool isBiasMode = false;
+
 const std::string QUERYSTATUS = "TM_FLEXIV_QUERY_STATUS";
 
 const std::string TASKTYPE = "TM_FLEXIV_TASK_TYPE";

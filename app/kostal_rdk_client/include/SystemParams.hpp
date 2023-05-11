@@ -126,6 +126,8 @@ extern const std::string LSB;
 extern const std::string SELP;
 extern const std::string TOKEN;
 
+// bias mode flag
+extern bool isBiasMode;
 // Json message key of query status
 extern const std::string QUERYSTATUS;
 

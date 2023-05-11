@@ -40,10 +40,13 @@ Status WriteExcel::writeDataToExcel(std::string taskType, std::string taskName,
     std::list<RobotData>* robotDataListPtr, std::list<SPIData>* spiDataListPtr,
     flexiv::Log* logPtr)
 {
-    if (spiDataListPtr->size() == 0) {
+    if(!isBiasMode){
+        if (spiDataListPtr->size() == 0) {
         k_log->error("The collected spi data list is null, exiting...");
         return CSV;
     }
+    }
+    
 
     if (robotDataListPtr->size() == 0) {
         k_log->error("The collected robot data list is null, exiting...");
@@ -138,15 +141,26 @@ Status WriteExcel::writeDataToExcel(std::string taskType, std::string taskName,
 
     std::list<SPIData>::iterator spiIterator = spiDataListPtr->begin();
     std::list<RobotData>::iterator robotIterator = robotDataListPtr->begin();
-
-    firstTimestamp = (*spiIterator).timestamp;
-
-    for(int index = 0; spiIterator != spiDataListPtr->end(); spiIterator++)
+    if(isBiasMode)
     {
-        robotIterator = findRobotIterator(robotIterator, spiIterator, robotDataListPtr, spiDataListPtr);
-        write2Excel(excelFile, index, robotIterator, spiIterator);
-        index++;
+        for(int index = 0; index < robotDataListPtr->size(); index++)
+        {
+            write2Excel(excelFile, index, robotIterator, spiIterator);            
+            robotIterator++;
+        }
+
+    }else{
+        firstTimestamp = (*spiIterator).timestamp;
+
+        for(int index = 0; spiIterator != spiDataListPtr->end(); spiIterator++)
+        {   
+            robotIterator = findRobotIterator(robotIterator, spiIterator, robotDataListPtr, spiDataListPtr);
+            write2Excel(excelFile, index, robotIterator, spiIterator);
+            index++;
+        }
+
     }
+    
 
     excelFile.close();
     return SUCCESS;
@@ -227,9 +241,11 @@ void WriteExcel::write2Excel(std::fstream &excelFile, int index, std::list<Robot
         excelFile << std::setfill('0') << std::setw(2) << std::right << std::hex;
         excelFile << +static_cast<uint8_t>((*i_spiData).SPISensor[j]) << ",";
     }
-
-    excelFile << std::to_string((*i_spiData).timestamp - firstTimestamp);
-
+    if(isBiasMode)
+        excelFile << std::to_string((*i_robotData).timestamp);
+    else    
+        excelFile << std::to_string((*i_spiData).timestamp - firstTimestamp);    
+    
     excelFile << std::endl;
 }
 

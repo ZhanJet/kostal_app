@@ -169,6 +169,9 @@ Status Communications::executeTask(flexiv::Robot* robotPtr)
 
     // 4th, run a sync task to execution the workplan and collect the robot data
     // at the same time
+    // even if bias mode, we also call normal paln
+    if (isBiasMode)
+        m_taskType = "NORMAL";
     result = m_stHandler.runScheduler(robotPtr, &m_spiData, &m_spiDataList,
         &m_robotData, &m_robotDataList, &f_log, m_taskName + "-" + m_taskType + "-MainPlan");
     if (result != SUCCESS) {
@@ -220,8 +223,9 @@ Status Communications::executeTask(flexiv::Robot* robotPtr)
     }
 
     // 8th, after the reinit of the spi device, switch flexivStatus to IDLE
-    // again
+    // and isBiasMode to false again
     m_flexivStatus = IDLE;
+    isBiasMode = false;
 
     return SUCCESS;
 }

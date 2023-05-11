@@ -147,6 +147,9 @@ Status JsonParser::parseTaskJSON(std::string* recvMsg, std::string* queryStatus,
     *taskType = m_jsonRecvValue[TASKTYPE].asString();
     *taskName = m_jsonRecvValue[TASKNAME].asString();
 
+    // judge if is bias mode
+    if(*taskType == "BIAS")
+        isBiasMode = true;
     k_log->info("****************************************************");
     k_log->info("Task message received!");
     k_log->info("The received taskType is: " + *taskType);
