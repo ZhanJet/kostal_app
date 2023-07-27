@@ -132,13 +132,15 @@ Status SPIOperations::collectSPIData(SPIData* spiDataPtr, std::list<SPIData>* sp
         {
             uint8_t read_buffer[10240] = {0};
             int32_t read_data_num = 0;
+            if(!isBiasMode){
+                int ret = VSI_SlaveReadBytes(VSI_USBSPI, 0, read_buffer, &read_data_num, 2);
 
-            int ret = VSI_SlaveReadBytes(VSI_USBSPI, 0, read_buffer, &read_data_num, 2);
-
-            if (ret != ERR_SUCCESS) {
-                k_log->error("The SPI device read data error");
-                return SPI;
+                if (ret != ERR_SUCCESS) {
+                    k_log->error("The SPI device read data error");
+                    return SPI;
+                }
             }
+            
             // filter and only keep data with 16 bytes length
             if (read_data_num == 16) {
                 for (int i = 0; i < read_data_num; i++) {
@@ -147,13 +149,13 @@ Status SPIOperations::collectSPIData(SPIData* spiDataPtr, std::list<SPIData>* sp
                 spiDataPtr->timestamp = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
                 std::cout << "spi collect data: " << std::endl;
                 for (int i = 0; i < read_data_num; i++) {
-                    printf("02X",read_buffer[i]);
+                    printf("%X",read_buffer[i]);
                 }
                 std::cout << std::endl;
                 spiDataListPtr->push_back(*spiDataPtr); 
             }
             
-            usleep(200);
+            usleep(100);
         }
     }
     std::cout << "spi collect finish!" << std::endl;

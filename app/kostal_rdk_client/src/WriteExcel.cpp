@@ -156,6 +156,25 @@ Status WriteExcel::writeDataToExcel(std::string taskType, std::string taskName,
         {   
             robotIterator = findRobotIterator(robotIterator, spiIterator, robotDataListPtr, spiDataListPtr);
             write2Excel(excelFile, index, robotIterator, spiIterator);
+            // RobotData searchData;
+            // SPIData tmpSPIdata = *spiIterator;
+            // std::list<SPIData> tmpSPIdatalist;
+
+            // tmpSPIdatalist.emplace_back(tmpSPIdata);
+            // robotIterator = findRobotIterator(robotDataListPtr->begin(), tmpSPIdatalist.begin(), robotDataListPtr, spiDataListPtr);
+            // searchData = *robotIterator;
+
+            // tmpSPIdatalist.front().timestamp += 40000;
+            // robotIterator = findRobotIterator(robotDataListPtr->begin(), tmpSPIdatalist.begin(), robotDataListPtr, spiDataListPtr);
+            // searchData.rawDataForceSensor = robotIterator->rawDataForceSensor;
+
+            // std::list<RobotData> tmpRobotDataList;
+            // tmpRobotDataList.emplace_back(searchData);
+            // write2Excel(excelFile, index, tmpRobotDataList.begin(), spiIterator);
+
+            // tmpRobotDataList.clear();
+            // tmpSPIdatalist.clear();
+
             index++;
         }
 
