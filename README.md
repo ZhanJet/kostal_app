@@ -1,4 +1,4 @@
-Flexiv App Guis
+-lexiv App Guis
 ===============
 
 This is a repository contains different UI applications and rdk programs that use flexiv_middleware2 as their communication infrastructure.
@@ -12,11 +12,12 @@ Setup build environment
     sudo apt update
     sudo apt install build-essential pkg-config git wget autoconf libtool
 ````
-
+7
 2. Install some necessary dependencies:
 
 ````
-    sudo apt install -y libboost-dev libjsoncpp-dev libspdlog-dev libusb-0.1-4
+    sudo apt install -y libjsoncpp-dev libspdlog-dev libusb-0.1-4
+    // Deleted libboost-dev due to we use boost of flexiv_thirdparty2 to ///install
 ````
 
 3. Install qt5 with:
