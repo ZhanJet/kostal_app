@@ -26,7 +26,7 @@ Status SyncTask::runScheduler(flexiv::Robot* robotPtr, SPIData* spiDataPtr,
     g_collectSwitch = true;
 
     // execute the plan by planName
-    robotPtr->executePlanByName(planName);
+    robotPtr->executePlan(planName);
 
     auto spiWorker = std::bind(&kostal::SPIOperations::collectSPIData, m_spiHandler, spiDataPtr, spiDataListPtr, logPtr);
     auto robotWorker = std::bind(&kostal::RobotOperations::collectSyncData, m_robotHandler, robotPtr, robotDataPtr, robotDataListPtr);

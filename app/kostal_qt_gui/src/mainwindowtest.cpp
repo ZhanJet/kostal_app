@@ -220,7 +220,3 @@ void MainWindowTest::setStatusLight(QLabel* label, int color, int size)
     label->setStyleSheet(SheetStyle);
 }
 
-//restart robot
-void MainWindow::slot_restart_robot(){
-    on_actionRestart_Robot_triggered();
-}

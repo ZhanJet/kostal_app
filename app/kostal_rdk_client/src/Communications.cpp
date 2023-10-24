@@ -173,7 +173,7 @@ Status Communications::executeTask(flexiv::Robot* robotPtr)
     if (isBiasMode)
         m_taskType = "NORMAL";
     result = m_stHandler.runScheduler(robotPtr, &m_spiData, &m_spiDataList,
-        &m_robotData, &m_robotDataList, &f_log, m_taskName + "-" + m_taskType + "-ILC");
+        &m_robotData, &m_robotDataList, &f_log, m_taskName + "-" + m_taskType + "-MainPlan");
     if (result != SUCCESS) {
         m_flexivStatus = FAULT;
         k_log->error("The sync task is failed to be executed");

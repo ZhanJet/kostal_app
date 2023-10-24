@@ -155,3 +155,8 @@ void MainWindow::on_actionRestart_Robot_triggered()
     runProcess->start("sudo /home/kostal/Programs/Kostal/flexiv_app_guis/build/app/kostal_rdk_client/kostal_rdk_client");
     runProcess->waitForStarted();
 }
+
+//restart robot
+void MainWindow::slot_restart_robot(){
+    on_actionRestart_Robot_triggered();
+}

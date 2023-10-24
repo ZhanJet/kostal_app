@@ -50,7 +50,7 @@ target_include_directories(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME} 
     PRIVATE
     flexiv::flexiv_app_guis
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../thirdparty/flexiv_rdk/lib/libFlexivRdk.x86_64-linux-gnu.a
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../thirdparty/flexiv_rdk/lib/libflexiv_rdk.x86_64-linux-gnu.a
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/libjsoncpp.a
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/libGinkgo_Driver.so
     Threads::Threads

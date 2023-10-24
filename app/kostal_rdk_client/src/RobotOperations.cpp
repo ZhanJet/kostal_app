@@ -56,10 +56,10 @@ Status RobotOperations::buildRobotConnection(
     k_log->info("The robot is now operational");
 
     // Set mode after robot is operational
-    robotPtr->setMode(flexiv::MODE_PLAN_EXECUTION);
+    robotPtr->setMode(flexiv::NRT_PLAN_EXECUTION);
 
     // Wait for the mode to be switched
-    while (robotPtr->getMode() != flexiv::MODE_PLAN_EXECUTION) {
+    while (robotPtr->getMode() != flexiv::NRT_PLAN_EXECUTION) {
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
     k_log->info("The robot is now in plan execution mode");
@@ -151,7 +151,7 @@ Status RobotOperations::executeRobotPlan(
         flexiv::Robot* robotPtr, flexiv::Log* logPtr, std::string planName)
 {
     // execute plan by name
-    robotPtr->executePlanByName(planName);
+    robotPtr->executePlan(planName);
 
     // sleep when robot is prepare to execute
     while (robotPtr->isBusy()) {

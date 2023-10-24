@@ -66,10 +66,10 @@ void RobotOperations::setExecutionMode(flexiv::Robot* robot, flexiv::Log* log)
     }
 
     // Set mode to plan execution after robot is operational
-    robot->setMode(flexiv::MODE_PLAN_EXECUTION);
+    robot->setMode(flexiv::NRT_PLAN_EXECUTION);
 
     // Wait for the mode to be switched
-    while (robot->getMode() != flexiv::MODE_PLAN_EXECUTION) {
+    while (robot->getMode() != flexiv::NRT_PLAN_EXECUTION) {
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 

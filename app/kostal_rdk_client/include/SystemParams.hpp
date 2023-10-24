@@ -15,7 +15,7 @@
 #include <flexiv/Model.hpp>
 #include <flexiv/Robot.hpp>
 #include <flexiv/Scheduler.hpp>
-#include <flexiv/StatesData.hpp>
+#include <flexiv/Data.hpp>
 #include <flexiv/Utility.hpp>
 
 // STL header files
