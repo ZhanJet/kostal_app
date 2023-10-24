@@ -30,5 +30,6 @@ public slots:
     void slotUpdateSpiData(int status, QString spi_cpol, QString spi_cpha, QString spi_lsb, QString spi_selp);
     void slotUpdateTestmanData(int status);
     void on_actionRestart_Robot_triggered();
+    void slot_restart_robot();
 };
 #endif // MAINWINDOW_H

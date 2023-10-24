@@ -152,6 +152,6 @@ void MainWindow::on_actionRestart_Robot_triggered()
     QThread::msleep(1500);
 
     QProcess *runProcess = new QProcess(this);
-    runProcess->start("/home/kostal/Programs/Kostal/flexiv_app_guis/build/app/kostal_rdk_client/kostal_rdk_client");
+    runProcess->start("sudo /home/kostal/Programs/Kostal/flexiv_app_guis/build/app/kostal_rdk_client/kostal_rdk_client");
     runProcess->waitForStarted();
 }
