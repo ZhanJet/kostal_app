@@ -5,6 +5,7 @@
  */
 
 #include "Communications.hpp"
+#include "FFT_handler.hpp"
 
 namespace kostal {
 
@@ -187,6 +188,26 @@ Status Communications::executeTask(flexiv::Robot* robotPtr)
     // &m_robotDataList, &m_spiDataList, &m_leftRobotDataList,
     // &m_leftSPIDataList, &m_rightRobotDataList, &m_rightSPIDataList,
     //&f_log);
+
+    // do fft and cut off noise
+    FFT_handler fftHandler;
+    std::vector<double> Fz(m_robotDataList.size());
+    std::list<RobotData>::iterator iter = m_robotDataList.begin();
+    for (size_t i = 0; i < m_robotDataList.size(); i++)
+    {
+        Fz[i] = (*iter).rawDataForceSensor[2];
+        iter++;
+    }
+    
+    fftHandler.cutoff(Fz.begin(), m_robotDataList.size(), 0.001, 6.0);
+
+    iter = m_robotDataList.begin();
+    for (size_t i = 0; i < m_robotDataList.size(); i++)
+    {
+        (*iter).rawDataForceSensor[2] = Fz[i];
+        iter++;
+    }
+
 
     // 5th, write excel files with collected robot data list and spi data list
     result = m_weHandler.writeDataToExcel(
