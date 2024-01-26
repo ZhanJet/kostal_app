@@ -201,7 +201,7 @@ Status Communications::executeTask(flexiv::Robot* robotPtr)
     }
 
     // fft filter
-    fftHandler.cutoff(Fz.begin(), m_robotDataList.size(), 0.001, 6.0);
+    fftHandler.cutoff(Fz.begin(), m_robotDataList.size(), 0.001, 3.0);
 
     // move average filter
     int windowSize = 10;
