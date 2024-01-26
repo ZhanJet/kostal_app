@@ -6,6 +6,7 @@
 
 #include "Communications.hpp"
 #include "FFT_handler.hpp"
+#include "MoveAverage.hpp"
 
 namespace kostal {
 
@@ -198,13 +199,25 @@ Status Communications::executeTask(flexiv::Robot* robotPtr)
         Fz[i] = (*iter).rawDataForceSensor[2];
         iter++;
     }
-    
+
+    // fft filter
     fftHandler.cutoff(Fz.begin(), m_robotDataList.size(), 0.001, 6.0);
+
+    // move average filter
+    int windowSize = 10;
+    MovingAverage movmean(windowSize);
+    std::vector<double> Fz_average;
+
+    for (double val : Fz) {
+        double avg = movmean.next(val);
+        Fz_average.push_back(avg);
+    }
 
     iter = m_robotDataList.begin();
     for (size_t i = 0; i < m_robotDataList.size(); i++)
     {
-        (*iter).rawDataForceSensor[2] = Fz[i];
+        // (*iter).rawDataForceSensor[2] = Fz[i];
+        (*iter).rawDataForceSensor[2] = Fz_average[i];
         iter++;
     }
 
